@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofxiOS.h"
+#include "soundMixer.h"
 
 class ofApp : public ofxiOSApp {
 	
@@ -20,7 +21,22 @@ class ofApp : public ofxiOSApp {
         void gotFocus();
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
+    
+        void audioOut( float * input, int bufferSize, int nChannels );
+        void audioIn( float * input, int bufferSize, int nChannels );
+        double phase;
+    
+        soundMixer mixer;
+        vector<soundRecorder*> recorders;
+    
+        ofSoundPlayer player;
 
+    
+        ofSoundBuffer buffer;
+        int recPos;
+        int playPos;
+        bool RMode = false;
+        bool PMode = false;
 };
 
 
