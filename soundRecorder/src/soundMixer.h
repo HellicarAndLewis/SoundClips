@@ -14,7 +14,7 @@
 
 class soundMixer {
 private:
-    int numInputs;
+    int numInputs, numPlayingInputs;
     vector<soundRecorder*> recorders;
     vector<ofSoundPlayer*> players;
 public:

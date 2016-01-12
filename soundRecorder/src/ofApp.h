@@ -31,7 +31,6 @@ class ofApp : public ofxiOSApp {
     
         ofSoundPlayer player;
 
-    
         ofSoundBuffer buffer;
         int recPos;
         int playPos;

@@ -10,14 +10,29 @@
 
 soundMixer::soundMixer() {
     numInputs = 0;
+    numPlayingInputs = 0;
 }
 
 void soundMixer::outputMix(float * output, int bufferSize, int nChannels) {
+    numPlayingInputs = 0;
     for(int i = 0; i < recorders.size(); i++) {
         recorders[i]->outputRecording(output, bufferSize, nChannels);
+        if(recorders[i]->isPlaying()) {
+            numPlayingInputs++;
+        }
     }
-    for(int i = 0; i < bufferSize; i++) {
-        output[i] /= numInputs;
+    for(int i = 0; i < players.size(); i++) {
+        if(players[i]->isPlaying()) {
+            numPlayingInputs++;
+        }
+    }
+    if(numPlayingInputs > 0) {
+        for(int i = 0; i < bufferSize; i++) {
+            output[i] /= numPlayingInputs;
+        }
+        for(int i = 0; i < players.size(); i++) {
+            players[i]->setVolume(1.0f/(float)numPlayingInputs);
+        }
     }
 }
 

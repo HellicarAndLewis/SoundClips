@@ -460,6 +460,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				TARGETED_DEVICE_FAMILY = 2;
+				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxSoundObjects/libs/libaudiodecoder/include/;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Debug;
@@ -474,6 +475,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				TARGETED_DEVICE_FAMILY = 2;
+				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxSoundObjects/libs/libaudiodecoder/include/;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Release;
