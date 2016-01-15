@@ -12,6 +12,7 @@ SoundController::SoundController() {
     playingRecording = false;
     currentlyRecording = false;
     mode = modes::IDLE;
+    soundIndex = 0;
 }
 
 void SoundController::setPosition(float _x, float _y, float _width, float _height) {
@@ -45,6 +46,7 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
         categoryButtons[i].bounds = ofRectangle(CategoryX, CategoryY, CategoryButtonWidth, CategoryButtonHeight);
         soundButtons[i].bounds = ofRectangle(CategoryX + CategoryButtonWidth, CategoryY,  CategoryButtonWidth, CategoryButtonHeight);
+        soundButtons[i].index = i;
         CategoryY += CategoryButtonHeight;
     }
     int i = 0;
@@ -86,10 +88,11 @@ void SoundController::setRecorder(soundRecorder* _input) {
     recorder = _input;
     categoryName = "Recordings";
     soundName = recorder->getName();
+    soundIndex = recorder->getIndex();
 }
 
 void SoundController::play() {
-    if(!allMuted) {
+    if(!(*allMuted)) {
         if(playingRecording) {
             if(recorder == NULL) {
                 return;
@@ -137,9 +140,10 @@ void SoundController::update() {
             mode = modes::IDLE;
         }
     }
-    if(keyboard->isKeyboardShowing()) {
+    if(keyboard->isKeyboardShowing() && mode == modes::SETUP) {
         for(int i = 0; i < (*allRecorders).size(); i++) {
-            if((*allRecorders)[i]->getName() == soundName) {
+            if((*allRecorders)[i]->getIndex() == soundIndex) {
+                cout<<soundIndex<<endl;
                 (*allRecorders)[i]->setName(keyboard->getText());
                 soundName = keyboard->getText();
                 soundButtons[i].name = keyboard->getText();
@@ -222,6 +226,8 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
                 }
             } else if(isInside(touch.x, touch.y, soundButtons[i].bounds.x, soundButtons[i].bounds.y, soundButtons[i].bounds.width, soundButtons[i].bounds.height)) {
                 soundName = soundButtons[i].name;
+                soundIndex = soundButtons[i].index;
+                cout<<soundIndex<<endl;
             }
         }
         if(edit.isInside(touch.x, touch.y)) {
@@ -233,7 +239,7 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
             if(categoryName == "Recordings") {
                 playingRecording = true;
                 for(int i = 0; i < allRecorders->size(); i++) {
-                    if((*allRecorders)[i]->getName() == soundName) {
+                    if((*allRecorders)[i]->getIndex() == soundIndex) {
                         setRecorder((*allRecorders)[i]);
                         break;
                     }
@@ -251,7 +257,7 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
         if(categoryName == "Recordings" && record.isInside(touch.x, touch.y)) {
             currentlyRecording = true;
             for(int i = 0; i < allRecorders->size(); i++) {
-                if((*allRecorders)[i]->getName() == soundName) {
+                if((*allRecorders)[i]->getIndex() == soundIndex) {
                     (*allRecorders)[i]->record();
                     break;
                 }
@@ -267,6 +273,12 @@ void SoundController::onTouchUp(ofTouchEventArgs & touch) {
             keyboard->setVisible(true);
         }
         currentlyRecording = false;
+        for(int i = 0; i < allRecorders->size(); i++) {
+            if((*allRecorders)[i]->getIndex() == soundIndex) {
+                (*allRecorders)[i]->stopRecording();
+                break;
+            }
+        }
     }
 }
 
@@ -298,7 +310,6 @@ void SoundController::drawLists() {
             ofPopStyle();
         }
         listFont->drawString(it->first, categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
-
         i++;
     }
     if(categoryName == "Recordings") {
@@ -324,7 +335,7 @@ void SoundController::drawLists() {
         }
     } else {
         for(int i = 0; i < allRecorders->size(); i++) {
-            if((*allRecorders)[i]->getName() == soundName) {
+            if((*allRecorders)[i]->getIndex() == soundIndex) {
                 ofPushStyle();
                 ofSetColor(255);
                 ofFill();

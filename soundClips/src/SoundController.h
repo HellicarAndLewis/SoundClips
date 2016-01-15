@@ -23,6 +23,7 @@
 struct button {
     string name;
     ofRectangle bounds;
+    int index;
     bool isInside(float _x, float _y) {
         return (_x > bounds.x && _x < (bounds.x + bounds.width)) && (_y > bounds.y && _y < (bounds.y + bounds.height));
     }
@@ -34,6 +35,7 @@ private:
     soundRecorder* recorder;
     ofxiOSKeyboard* keyboard;
     string soundName, categoryName;
+    int soundIndex;
     bool playingRecording;
     bool currentlyRecording;
     string beaconName;

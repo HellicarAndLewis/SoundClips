@@ -83,6 +83,7 @@ void ofApp::setup(){
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         soundRecorder* recorder = new soundRecorder();
         recorder->setName("Empty " + ofToString(recorders.size()));
+        recorder->setIndex(i);
         recorders.push_back(recorder);
         mixer->addRecorder(recorder);
     }
@@ -154,8 +155,17 @@ void ofApp::draw(){
         }
     }
     ofPushStyle();
-    ofSetColor(127);
-    ofDrawRectRounded(muteAll.bounds, 10);
+    if(allMuted) {
+        ofSetColor(127);
+        ofDrawRectRounded(muteAll.bounds, 10);
+        ofSetColor(255);
+        listFont.drawString("Unmute", muteAll.bounds.x + muteAll.bounds.width/2 - listFont.getStringBoundingBox("Unmute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + listFont.getStringBoundingBox("Unmute", 0, 0).height / 2);
+    } else {
+        ofSetColor(127);
+        ofDrawRectRounded(muteAll.bounds, 10);
+        ofSetColor(255);
+        listFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - listFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
+    }
     ofPopStyle();
 }
 
@@ -174,7 +184,7 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
         if(!allMuted) {
             allMuted = true;
             for(auto it = players.begin(); it != players.end(); it++) {
-                for(auto soundIt = it->second.begin(); soundIt != it->second.end(); it++) {
+                for(auto soundIt = it->second.begin(); soundIt != it->second.end(); soundIt++) {
                     soundIt->second->stop();
                 }
             }

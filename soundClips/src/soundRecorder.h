@@ -18,6 +18,8 @@ private:
     ofSoundBuffer buffer;
     int bufferLength;
     string name;
+    int length;
+    int index;
     
 public:
     soundRecorder();
@@ -25,6 +27,8 @@ public:
     void play();
     void record();
     void stop();
+    void stopRecording();
+
     
     void fillRecording( float * input, int bufferSize, int nChannels );
     void outputRecording( float * output, int bufferSize, int nChannels );
@@ -34,6 +38,7 @@ public:
     void setRecPos(int pos = 0) { recPos = pos; };
     void setDuration(float seconds);
     void setName(string _name) { name = _name; };
+    void setIndex(int _index) {index = _index;};
     
     float getDuration();
     int getPlayPos(){ return playPos; };
@@ -41,6 +46,7 @@ public:
     string getName(){ return name; };
     bool isPlaying() { return playing; };
     bool isRecording() { return recording; };
+    int getIndex() { return index; };
     
     ofSoundBuffer* getSoundBuffer() { return &buffer; };
 };
