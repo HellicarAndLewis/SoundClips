@@ -64,7 +64,7 @@ void soundRecorder::outputRecording( float * output, int bufferSize, int nChanne
             if(playPos < bufferLength) {
                 output[i] += buffer[playPos++];
             } else {
-                playPos = 0;
+                stop();
             }
         }
     }

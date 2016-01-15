@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ofxiOS.h"
+#include "ofxiOSKeyboard.h"
 #include "NearablesManager.h"
 #include "soundMixer.h"
-#include "SoundController.hpp"
+#include "SoundController.h"
 
 #define NUM_CONTROLLERS 9
 
@@ -29,11 +30,25 @@ class ofApp : public ofxiOSApp {
         void audioOut( float * output, int bufferSize, int nChannels );
         void audioIn( float * input, int bufferSize, int nChannels );
     
+    bool settingUp;
+
+    ofTrueTypeFont numberFont;
+    ofTrueTypeFont listFont;
     SoundController controllers[NUM_CONTROLLERS];
     soundMixer* mixer;
     movementManager* manager;
-    map<string, vector<ofSoundPlayer*> > players;
-    map<string, soundRecorder*> recorders;
+    map<string, map<string, ofSoundPlayer*> > players;
+    vector<soundRecorder*> recorders;
+    ofImage gear;
+    ofImage arrow;
+    ofxiOSKeyboard* keyboard;
+    
+    bool allMuted;
+    
+    button muteAll;
+    
+    ofColor cols[NUM_CONTROLLERS];
+    string names[NUM_CONTROLLERS];
 };
 
 

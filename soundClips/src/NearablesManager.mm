@@ -41,6 +41,7 @@ map<string, bool>* movementManager::getNearables() {
     for(id nearable in nearables) {
         string name = string([[nearable identifier] UTF8String]);
         bool moving = [nearable isMoving];
+        //[nearable ]
         self.beacons->operator[](name) = moving;
     }
 }

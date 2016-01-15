@@ -17,6 +17,8 @@ private:
     bool playing, recording;
     ofSoundBuffer buffer;
     int bufferLength;
+    string name;
+    
 public:
     soundRecorder();
     
@@ -31,10 +33,12 @@ public:
     void setPlayPos(int pos = 0) { playPos = pos; };
     void setRecPos(int pos = 0) { recPos = pos; };
     void setDuration(float seconds);
+    void setName(string _name) { name = _name; };
     
     float getDuration();
     int getPlayPos(){ return playPos; };
     int getRecPos(){ return recPos; };
+    string getName(){ return name; };
     bool isPlaying() { return playing; };
     bool isRecording() { return recording; };
     

@@ -30,6 +30,8 @@ class ofApp : public ofxiOSApp {
         vector<soundRecorder*> recorders;
     
         ofSoundPlayer player;
+    
+        ofTrueTypeFont font;
 
         ofSoundBuffer buffer;
         int recPos;

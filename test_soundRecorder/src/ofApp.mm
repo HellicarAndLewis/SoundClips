@@ -18,7 +18,7 @@ void ofApp::setup(){
     player.setPaused(false);
     player.play();
     player.setVolume(0.1);
-    
+        
     for(int i = 0; i < recorders.size(); i++) {
         mixer.addRecorder(recorders[i]);
     }

@@ -11,7 +11,7 @@
 		1A52555D1C45502500F4635C /* NearablesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A52555C1C45502500F4635C /* NearablesManager.mm */; };
 		1A5255621C45504000F4635C /* soundMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52555E1C45504000F4635C /* soundMixer.cpp */; };
 		1A5255631C45504000F4635C /* soundRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255601C45504000F4635C /* soundRecorder.cpp */; };
-		1A5255691C4562B900F4635C /* SoundController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255671C4562B900F4635C /* SoundController.cpp */; };
+		1A5255691C4562B900F4635C /* SoundController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255671C4562B900F4635C /* SoundController.mm */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -76,8 +76,8 @@
 		1A52555F1C45504000F4635C /* soundMixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundMixer.h; sourceTree = "<group>"; };
 		1A5255601C45504000F4635C /* soundRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundRecorder.cpp; sourceTree = "<group>"; };
 		1A5255611C45504000F4635C /* soundRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundRecorder.h; sourceTree = "<group>"; };
-		1A5255671C4562B900F4635C /* SoundController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundController.cpp; sourceTree = "<group>"; };
-		1A5255681C4562B900F4635C /* SoundController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SoundController.hpp; sourceTree = "<group>"; };
+		1A5255671C4562B900F4635C /* SoundController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SoundController.mm; sourceTree = "<group>"; };
+		1A5255681C4562B900F4635C /* SoundController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundController.h; sourceTree = "<group>"; };
 		1AACF64C1C456F65002FAFA6 /* ofxIntegrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxIntegrator.h; sourceTree = "<group>"; };
 		1C0DA2561397A7DE0246858B /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -344,8 +344,8 @@
 				1A5255611C45504000F4635C /* soundRecorder.h */,
 				1A52555B1C45502500F4635C /* NearablesManager.h */,
 				1A52555C1C45502500F4635C /* NearablesManager.mm */,
-				1A5255671C4562B900F4635C /* SoundController.cpp */,
-				1A5255681C4562B900F4635C /* SoundController.hpp */,
+				1A5255671C4562B900F4635C /* SoundController.mm */,
+				1A5255681C4562B900F4635C /* SoundController.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -466,7 +466,7 @@
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
 				1A5255621C45504000F4635C /* soundMixer.cpp in Sources */,
-				1A5255691C4562B900F4635C /* SoundController.cpp in Sources */,
+				1A5255691C4562B900F4635C /* SoundController.mm in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
 			);
