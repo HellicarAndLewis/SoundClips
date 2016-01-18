@@ -86,6 +86,8 @@ public:
     void setGear(ofImage* _gear) {gear = _gear;};
     void setKeyboard(ofxiOSKeyboard* _keyboard) {keyboard = _keyboard;};
     void setAllMuted(bool* _allMuted) {allMuted = _allMuted;};
+    void setCategoryName(string _category) {categoryName = _category;};
+    void setSoundName(string _sound) {soundName = _sound;};
 
     void setCol(ofColor _col) {col = _col;};
     void setMode(int _mode) {mode = _mode;};
@@ -100,7 +102,7 @@ public:
     void setPosition(float _x, float _y, float _width, float _height);
     void onTouch(ofTouchEventArgs & touch);
     void onTouchUp(ofTouchEventArgs & touch);
-    void onDoubleTouch(ofTouchEventArgs & touch);
+    void onTouchMoved(ofTouchEventArgs & touch);
     void drawLists();
 
     void update();

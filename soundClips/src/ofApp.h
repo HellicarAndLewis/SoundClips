@@ -5,6 +5,7 @@
 #include "NearablesManager.h"
 #include "soundMixer.h"
 #include "SoundController.h"
+#include "ofxXmlSettings.h"
 
 #define NUM_CONTROLLERS 9
 
@@ -38,6 +39,8 @@ class ofApp : public ofxiOSApp {
     soundMixer* mixer;
     movementManager* manager;
     map<string, map<string, ofSoundPlayer*> > players;
+    vector<string> themes;
+    int themeNum;
     vector<soundRecorder*> recorders;
     ofImage gear;
     ofImage arrow;
@@ -46,6 +49,9 @@ class ofApp : public ofxiOSApp {
     bool allMuted;
     
     button muteAll;
+    button presets;
+    
+    ofxXmlSettings settings;
     
     ofColor cols[NUM_CONTROLLERS];
     string names[NUM_CONTROLLERS];

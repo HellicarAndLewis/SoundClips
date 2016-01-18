@@ -6,6 +6,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
+    ofSetOrientation(OF_ORIENTATION_DEFAULT);
+    
     //Setup the movement Manager
     manager = new movementManager();
     manager->setup();
@@ -21,6 +24,17 @@ void ofApp::setup(){
     muteAll.bounds = ofRectangle(WIDTH/2 - 50, HEIGHT/16 - 50, 100, 100);
     allMuted = false;
     
+    //Presets cycle button
+    presets.name = "Presets";
+    presets.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 - 50, HEIGHT/16 - 50, 100, 100);
+    
+    //Settings which sound is connected to which beacons
+    for(int i = 0; i < NUM_CONTROLLERS; i++) {
+        string number = "0" + ofToString(i+1);
+        settings.setValue("settings:"+number+":Category", "Jungle");
+        settings.setValue("settings:"+number+":Sound", "Bon");
+    }
+    
     //Load all the Preset sounds
     ofDirectory soundDir("sounds");
     soundDir.listDir();
@@ -29,6 +43,8 @@ void ofApp::setup(){
         if(theme.isDirectory()) {
             map<string, ofSoundPlayer*> themePlayers;
             string themeName = ofSplitString(soundDir.getPath(i), "/")[1];
+            vector<string> themeSplit = ofSplitString(soundDir.getPath(i), "/");
+            themes.push_back(themeSplit[1]);
             theme.allowExt("mp3");
             theme.allowExt("wav");
             theme.listDir();
@@ -48,6 +64,8 @@ void ofApp::setup(){
         }
     }
     ofSoundStreamSetup(1, 1);
+    
+    themeNum = 0;
     
     numberFont.load("fonts/ITCAvantGardePro-Demi.otf", 100);
     listFont.load("fonts/Geo.otf", 32);
@@ -76,6 +94,7 @@ void ofApp::setup(){
     arrow.load("images/arrow.png");
     
     keyboard = new ofxiOSKeyboard(0,0,0,0);
+    keyboard->setMaxChars(11);
     keyboard->setBgColor(0, 0, 0, 0);
     keyboard->setFontColor(0,0,0, 0);
     keyboard->setFontSize(0);
@@ -97,10 +116,11 @@ void ofApp::setup(){
             int i = x + NUM_CONTROLLERS/3*y;
             controllers[i].setRecorders(&recorders);
             controllers[i].setPlayers(&players);
-            controllers[i].setPlayer((i > 5) ? players["Space"]["Bon"] : players["Jungle"]["Coff"]);
             controllers[i].setBeaconName(names[i]);
             controllers[i].setNumber(i);
             controllers[i].setNumberFont(&numberFont);
+            controllers[i].setPlayer(players["Space"]["Aon"]);
+            //controllers[i].setRecorder(recorders[0]);
             controllers[i].setListFont(&listFont);
             controllers[i].setCol(cols[i]);
             controllers[i].setArrow(&arrow);
@@ -110,6 +130,17 @@ void ofApp::setup(){
             controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + width*(y%3), width, height);
         }
     }
+    //Set all the sounds to the first theme!
+    int i = 0;
+    map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
+    for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
+        controllers[i].setPlayer(playerIt->second);
+//        controllers[i].setSoundName(playerIt->first);
+//        controllers[i].setCategoryName(themes[themeNum]);
+//        i++;
+    }
+    themeNum++;
+    themeNum %= themes.size();
 }
 
 //--------------------------------------------------------------
@@ -166,6 +197,10 @@ void ofApp::draw(){
         ofSetColor(255);
         listFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - listFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
     }
+    ofSetColor(127);
+//    ofDrawRectRounded(presets.bounds, 10);
+    ofSetColor(255);
+    listFont.drawString(themes[(themeNum-1)%themes.size()],  presets.bounds.x + presets.bounds.width/2 - listFont.getStringBoundingBox(themes[(themeNum-1)%themes.size()], 0, 0).width / 2, presets.bounds.y + presets.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
     ofPopStyle();
 }
 
@@ -195,11 +230,28 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
             allMuted = false;
         }
     }
+    if(presets.isInside(touch.x, touch.y)) {
+        int i = 0;
+//        cout<<players.begin()->first<<endl;
+        map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
+        for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
+            controllers[i].setPlayer(playerIt->second);
+//            controllers[i].setSoundName(playerIt->first);
+//            controllers[i].setCategoryName(themes[themeNum]);
+            i++;
+        }
+        themeNum++;
+        themeNum %= themes.size();
+//        for(int i = 0; i < NUM_CONTROLLERS; i++) {
+//        }
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::touchMoved(ofTouchEventArgs & touch){
-    
+    for(int i = 0; i < NUM_CONTROLLERS; i++) {
+        controllers[i].onTouchMoved(touch);
+    }
 }
 
 //--------------------------------------------------------------
@@ -221,7 +273,7 @@ void ofApp::touchCancelled(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void ofApp::lostFocus(){
-
+    
 }
 
 //--------------------------------------------------------------
