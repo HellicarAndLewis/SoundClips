@@ -18,6 +18,8 @@
 #include "ofxiOSKeyboard.h"
 #include "soundRecorder.h"
 #include "ofxIntegrator.h"
+#include "ofxXmlSettings.h"
+
 
 
 struct button {
@@ -104,6 +106,8 @@ public:
     void onTouchUp(ofTouchEventArgs & touch);
     void onTouchMoved(ofTouchEventArgs & touch);
     void drawLists();
+    void setSoundFromXml(ofxXmlSettings* settings);
+    void saveSoundToXml(ofxXmlSettings* settings);
 
     void update();
     bool isInside(int _x, int _y, float boundsX, float boundsY, float width, float height);

@@ -29,11 +29,22 @@ void ofApp::setup(){
     presets.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 - 50, HEIGHT/16 - 50, 100, 100);
     
     //Settings which sound is connected to which beacons
-    for(int i = 0; i < NUM_CONTROLLERS; i++) {
-        string number = "0" + ofToString(i+1);
-        settings.setValue("settings:"+number+":Category", "Jungle");
-        settings.setValue("settings:"+number+":Sound", "Bon");
+//    for(int i = 0; i < NUM_CONTROLLERS; i++) {
+//        string number = "0" + ofToString(i+1);
+//        settings.setValue("settings:"+number+":Category", "Jungle");
+//        settings.setValue("settings:"+number+":Sound", "Bon");
+//    }
+    string message = "";
+    if( settings.loadFile(ofxiOSGetDocumentsDirectory() + "settings.xml") ){
+        message = "settings.xml loaded from documents folder!";
+    }else if( settings.loadFile("settings/settings.xml") ){
+        message = "settingss.xml loaded from data folder!";
+    }else{
+        message = "unable to load settings.xml check data/ folder";
     }
+    cout<<message<<endl;
+    
+    string shouldBeJungle = settings.getValue("CONTROLLERS:ONE:CATEGORY", "Space");
     
     //Load all the Preset sounds
     ofDirectory soundDir("sounds");
@@ -113,13 +124,14 @@ void ofApp::setup(){
     float height = width;
     for(int y = 0; y < NUM_CONTROLLERS/3; y++) {
         for(int x = 0; x < NUM_CONTROLLERS/3; x++) {
-            int i = x + NUM_CONTROLLERS/3*y;
+            int i = x + (int)(3*y);
             controllers[i].setRecorders(&recorders);
             controllers[i].setPlayers(&players);
             controllers[i].setBeaconName(names[i]);
-            controllers[i].setNumber(i);
+            controllers[i].setNumber(i+1);
             controllers[i].setNumberFont(&numberFont);
-            controllers[i].setPlayer(players["Space"]["Aon"]);
+            controllers[i].setSoundFromXml(&settings);
+            //controllers[i].setPlayer(players["Space"]["Aon"]);
             //controllers[i].setRecorder(recorders[0]);
             controllers[i].setListFont(&listFont);
             controllers[i].setCol(cols[i]);
@@ -131,16 +143,16 @@ void ofApp::setup(){
         }
     }
     //Set all the sounds to the first theme!
-    int i = 0;
-    map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
-    for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
-        controllers[i].setPlayer(playerIt->second);
-//        controllers[i].setSoundName(playerIt->first);
-//        controllers[i].setCategoryName(themes[themeNum]);
-//        i++;
-    }
-    themeNum++;
-    themeNum %= themes.size();
+//    int i = 0;
+//    map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
+//    for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
+//        controllers[i].setPlayer(playerIt->second);
+////        controllers[i].setSoundName(playerIt->first);
+////        controllers[i].setCategoryName(themes[themeNum]);
+////        i++;
+//    }
+//    themeNum++;
+//    themeNum %= themes.size();
 }
 
 //--------------------------------------------------------------
@@ -273,7 +285,9 @@ void ofApp::touchCancelled(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void ofApp::lostFocus(){
-    
+    for(int i = 0; i < NUM_CONTROLLERS; i++) {
+        controllers[i].saveSoundToXml(&settings);
+    }
 }
 
 //--------------------------------------------------------------

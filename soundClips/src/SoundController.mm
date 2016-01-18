@@ -172,7 +172,7 @@ void SoundController::draw() {
     ofFill();
     ofDrawRectRounded(x.val, y.val, width.val, height.val, 10);
     ofSetColor(255);
-    numberFont->drawString("0" + ofToString(number+1), x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + 10);
+    numberFont->drawString("0" + ofToString(number), x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + 10);
     if(mode != modes::SETUP && width.val - 5 <= smallWidth) {
         listFont->drawString(categoryName,  x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + listFont->getStringBoundingBox("d", 0, 0).height + buffer*2);
         listFont->drawString(soundName, x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + listFont->getStringBoundingBox("d", 0, 0).height + buffer + listFont->getStringBoundingBox("d", 0, 0).height + buffer*3);
@@ -386,4 +386,93 @@ void SoundController::drawLists() {
         ofDrawRectangle(soundButtons[i].bounds);
     }
     ofPopStyle();
+}
+
+void SoundController::setSoundFromXml(ofxXmlSettings* settings) {
+    //I am so so sorry for this...
+    string num;
+    switch (number) {
+        case 1:
+            num = "ONE";
+            break;
+        case 2:
+            num = "TWO";
+            break;
+        case 3:
+            num = "THREE";
+            break;
+        case 4:
+            num = "FOUR";
+            break;
+        case 5:
+            num = "FIVE";
+            break;
+        case 6:
+            num = "SIX";
+            break;
+        case 7:
+            num = "SEVEN";
+            break;
+        case 8:
+            num = "EIGHT";
+            break;
+        case 9:
+            num = "NINE";
+            break;
+        default:
+            num = "";
+            break;
+    }
+    if(num != "") {
+        categoryName = settings->getValue("CONTROLLERS:"+num+":CATEGORY", "Space");
+        soundName = settings->getValue("CONTROLLERS:"+num+":SOUND", "Coff");
+        ofSoundPlayer* newPlayer = (*allPlayers)[categoryName][soundName];
+        setPlayer(newPlayer);
+    }
+}
+
+void SoundController::saveSoundToXml(ofxXmlSettings* settings) {
+    string num;
+    switch (number) {
+        case 1:
+            num = "ONE";
+            break;
+        case 2:
+            num = "TWO";
+            break;
+        case 3:
+            num = "THREE";
+            break;
+        case 4:
+            num = "FOUR";
+            break;
+        case 5:
+            num = "FIVE";
+            break;
+        case 6:
+            num = "SIX";
+            break;
+        case 7:
+            num = "SEVEN";
+            break;
+        case 8:
+            num = "EIGHT";
+            break;
+        case 9:
+            num = "NINE";
+            break;
+        default:
+            num = "";
+            break;
+    }
+    if(num != "") {
+        if(categoryName == "Recordings") {
+            settings->setValue("CONTROLLERS:"+num+":CATEGORY", allPlayers->begin()->first);
+            settings->setValue("CONTROLLERS:"+num+":SOUND", allPlayers->begin()->second.begin()->first);
+        } else {
+            settings->setValue("CONTROLLERS:"+num+":CATEGORY", categoryName);
+            settings->setValue("CONTROLLERS:"+num+":SOUND", soundName);
+        }
+        settings->saveFile(ofxiOSGetDocumentsDirectory() + "settings.xml");
+    }
 }
