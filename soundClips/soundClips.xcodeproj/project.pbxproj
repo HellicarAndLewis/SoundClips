@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A52555A1C45500E00F4635C /* EstimoteSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5255591C45500E00F4635C /* EstimoteSDK.framework */; };
-		1A52555D1C45502500F4635C /* NearablesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A52555C1C45502500F4635C /* NearablesManager.mm */; };
-		1A5255621C45504000F4635C /* soundMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52555E1C45504000F4635C /* soundMixer.cpp */; };
-		1A5255631C45504000F4635C /* soundRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255601C45504000F4635C /* soundRecorder.cpp */; };
-		1A5255691C4562B900F4635C /* SoundController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255671C4562B900F4635C /* SoundController.mm */; };
+		1A5255501C4537AB00F4635C /* EstimoteSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A52554F1C4537AB00F4635C /* EstimoteSDK.framework */; };
+		1A5255541C45388500F4635C /* NearablesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255531C45388500F4635C /* NearablesManager.mm */; };
+		1AD597EC1C4E8CAE00C44CEB /* SoundController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AD597EA1C4E8CAE00C44CEB /* SoundController.mm */; };
+		1AD597EF1C4E8CE500C44CEB /* soundMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD597ED1C4E8CE500C44CEB /* soundMixer.cpp */; };
+		1AD597F21C4E8D0900C44CEB /* soundRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD597F01C4E8D0900C44CEB /* soundRecorder.cpp */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -69,16 +69,16 @@
 		0A1DAC09F322AE313A40706D /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxToggle.h; path = ../../../addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
 		15F2C6477A769C03A56D1401 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSlider.cpp; path = ../../../addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
 		17E65988300FBD9AAA2CD0CA /* ofxGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGui.h; path = ../../../addons/ofxGui/src/ofxGui.h; sourceTree = SOURCE_ROOT; };
-		1A5255591C45500E00F4635C /* EstimoteSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EstimoteSDK.framework; sourceTree = "<group>"; };
-		1A52555B1C45502500F4635C /* NearablesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NearablesManager.h; sourceTree = "<group>"; };
-		1A52555C1C45502500F4635C /* NearablesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NearablesManager.mm; sourceTree = "<group>"; };
-		1A52555E1C45504000F4635C /* soundMixer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundMixer.cpp; sourceTree = "<group>"; };
-		1A52555F1C45504000F4635C /* soundMixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundMixer.h; sourceTree = "<group>"; };
-		1A5255601C45504000F4635C /* soundRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundRecorder.cpp; sourceTree = "<group>"; };
-		1A5255611C45504000F4635C /* soundRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundRecorder.h; sourceTree = "<group>"; };
-		1A5255671C4562B900F4635C /* SoundController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SoundController.mm; sourceTree = "<group>"; };
-		1A5255681C4562B900F4635C /* SoundController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundController.h; sourceTree = "<group>"; };
-		1AACF64C1C456F65002FAFA6 /* ofxIntegrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxIntegrator.h; sourceTree = "<group>"; };
+		1A52554F1C4537AB00F4635C /* EstimoteSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EstimoteSDK.framework; sourceTree = "<group>"; };
+		1A5255531C45388500F4635C /* NearablesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NearablesManager.mm; sourceTree = "<group>"; };
+		1A5255561C4539E700F4635C /* NearablesManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NearablesManager.h; sourceTree = "<group>"; };
+		1AD597D31C4E8C5000C44CEB /* ofxIntegrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxIntegrator.h; sourceTree = "<group>"; };
+		1AD597EA1C4E8CAE00C44CEB /* SoundController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SoundController.mm; sourceTree = "<group>"; };
+		1AD597EB1C4E8CAE00C44CEB /* SoundController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundController.h; sourceTree = "<group>"; };
+		1AD597ED1C4E8CE500C44CEB /* soundMixer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundMixer.cpp; sourceTree = "<group>"; };
+		1AD597EE1C4E8CE500C44CEB /* soundMixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundMixer.h; sourceTree = "<group>"; };
+		1AD597F01C4E8D0900C44CEB /* soundRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundRecorder.cpp; sourceTree = "<group>"; };
+		1AD597F11C4E8D0900C44CEB /* soundRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundRecorder.h; sourceTree = "<group>"; };
 		1C0DA2561397A7DE0246858B /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* soundClips.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = soundClips.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,7 +144,7 @@
 				5326AEA810A23A0500278DE6 /* CoreLocation.framework in Frameworks */,
 				E41D400B13B39D2100A75A5D /* AVFoundation.framework in Frameworks */,
 				E41D400C13B39D2100A75A5D /* CoreMedia.framework in Frameworks */,
-				1A52555A1C45500E00F4635C /* EstimoteSDK.framework in Frameworks */,
+				1A5255501C4537AB00F4635C /* EstimoteSDK.framework in Frameworks */,
 				E41D400D13B39D2100A75A5D /* CoreVideo.framework in Frameworks */,
 				E41D400E13B39D2100A75A5D /* MapKit.framework in Frameworks */,
 				67DFA53619F92A69003B3434 /* Accelerate.framework in Frameworks */,
@@ -162,18 +162,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1AACF6271C456F65002FAFA6 /* ofxIntegrator */ = {
+		1AD597AE1C4E8C5000C44CEB /* ofxIntegrator */ = {
 			isa = PBXGroup;
 			children = (
-				1AACF64B1C456F65002FAFA6 /* src */,
+				1AD597D21C4E8C5000C44CEB /* src */,
 			);
 			path = ofxIntegrator;
 			sourceTree = "<group>";
 		};
-		1AACF64B1C456F65002FAFA6 /* src */ = {
+		1AD597D21C4E8C5000C44CEB /* src */ = {
 			isa = PBXGroup;
 			children = (
-				1AACF64C1C456F65002FAFA6 /* ofxIntegrator.h */,
+				1AD597D31C4E8C5000C44CEB /* ofxIntegrator.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -287,7 +287,7 @@
 		BB16E9930F2B1E5900518274 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				1A5255591C45500E00F4635C /* EstimoteSDK.framework */,
+				1A52554F1C4537AB00F4635C /* EstimoteSDK.framework */,
 				BBE5E94E0F497BD800F28951 /* core */,
 			);
 			name = libs;
@@ -296,7 +296,7 @@
 		BB16F26B0F2B646B00518274 /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				1AACF6271C456F65002FAFA6 /* ofxIntegrator */,
+				1AD597AE1C4E8C5000C44CEB /* ofxIntegrator */,
 				480A780D8D0308AE4A368801 /* ofxGui */,
 				1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */,
 			);
@@ -338,14 +338,14 @@
 				E4D8936B11527B74007E1F53 /* main.mm */,
 				E4D8936D11527B74007E1F53 /* ofApp.mm */,
 				E4D8936C11527B74007E1F53 /* ofApp.h */,
-				1A52555E1C45504000F4635C /* soundMixer.cpp */,
-				1A52555F1C45504000F4635C /* soundMixer.h */,
-				1A5255601C45504000F4635C /* soundRecorder.cpp */,
-				1A5255611C45504000F4635C /* soundRecorder.h */,
-				1A52555B1C45502500F4635C /* NearablesManager.h */,
-				1A52555C1C45502500F4635C /* NearablesManager.mm */,
-				1A5255671C4562B900F4635C /* SoundController.mm */,
-				1A5255681C4562B900F4635C /* SoundController.h */,
+				1A5255531C45388500F4635C /* NearablesManager.mm */,
+				1A5255561C4539E700F4635C /* NearablesManager.h */,
+				1AD597EA1C4E8CAE00C44CEB /* SoundController.mm */,
+				1AD597EB1C4E8CAE00C44CEB /* SoundController.h */,
+				1AD597ED1C4E8CE500C44CEB /* soundMixer.cpp */,
+				1AD597EE1C4E8CE500C44CEB /* soundMixer.h */,
+				1AD597F01C4E8D0900C44CEB /* soundRecorder.cpp */,
+				1AD597F11C4E8D0900C44CEB /* soundRecorder.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -378,6 +378,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0600;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "soundClips" */;
@@ -452,23 +453,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4D8936E11527B74007E1F53 /* main.mm in Sources */,
+				1AD597EF1C4E8CE500C44CEB /* soundMixer.cpp in Sources */,
+				1AD597EC1C4E8CAE00C44CEB /* SoundController.mm in Sources */,
 				E4D8936F11527B74007E1F53 /* ofApp.mm in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
+				1A5255541C45388500F4635C /* NearablesManager.mm in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
-				1A5255631C45504000F4635C /* soundRecorder.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
-				1A52555D1C45502500F4635C /* NearablesManager.mm in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
-				1A5255621C45504000F4635C /* soundMixer.cpp in Sources */,
-				1A5255691C4562B900F4635C /* SoundController.mm in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
+				1AD597F21C4E8D0900C44CEB /* soundRecorder.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,6 +488,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -496,7 +498,9 @@
 				"GCC_WARN_64_TO_32_BIT_CONVERSION[arch=*64]" = NO;
 				INFOPLIST_FILE = "ofxiOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
-				PRODUCT_NAME = "${TARGET_NAME}";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = soundClips;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 2;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
@@ -505,6 +509,7 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -514,7 +519,8 @@
 				"GCC_WARN_64_TO_32_BIT_CONVERSION[arch=*64]" = NO;
 				INFOPLIST_FILE = "ofxiOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
-				PRODUCT_NAME = "${TARGET_NAME}";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = soundClips;
 				TARGETED_DEVICE_FAMILY = 2;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};

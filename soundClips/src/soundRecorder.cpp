@@ -34,9 +34,7 @@ void soundRecorder::record() {
 
 void soundRecorder::setDuration(float seconds) {
     bufferLength = seconds * SAMPLES_PER_SECOND;
-    //buffer.clear();
     buffer.setNumChannels(bufferLength);
-    //buffer.set(0);
 }
 
 float soundRecorder::getDuration() {

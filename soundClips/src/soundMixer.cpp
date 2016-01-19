@@ -24,19 +24,19 @@ void soundMixer::outputMix(float * output, int bufferSize, int nChannels) {
             numPlayingInputs++;
         }
     }
-//    for(int i = 0; i < players.size(); i++) {
-//        if(players[i]->isPlaying()) {
-//            numPlayingInputs++;
-//        }
-//    }
-////    if(numPlayingInputs > 1) {
-//        for(int i = 0; i < bufferSize; i++) {
-//            output[i] /= numPlayingInputs;
-//        }
-//        for(int i = 0; i < players.size(); i++) {
-//            players[i]->setVolume(1.0f/(float)numPlayingInputs);
-//        }
-//    }
+    //    for(int i = 0; i < players.size(); i++) {
+    //        if(players[i]->isPlaying()) {
+    //            numPlayingInputs++;
+    //        }
+    //    }
+    ////    if(numPlayingInputs > 1) {
+    //        for(int i = 0; i < bufferSize; i++) {
+    //            output[i] /= numPlayingInputs;
+    //        }
+    //        for(int i = 0; i < players.size(); i++) {
+    //            players[i]->setVolume(1.0f/(float)numPlayingInputs);
+    //        }
+    //    }
 }
 
 void soundMixer::addRecorder(soundRecorder* recorder) {

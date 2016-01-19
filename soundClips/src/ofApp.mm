@@ -27,13 +27,18 @@ void ofApp::setup(){
     //Presets cycle button
     presets.name = "Presets";
     presets.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 - 50, HEIGHT/16 - 50, 100, 100);
+    presetsDown.name = "PresetsDown";
+    presetsDown.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 - 100, HEIGHT/16 - 50, 50, 100);
+    presetsUp.name = "PresetsUp";
+    presetsUp.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 + 50, HEIGHT/16 - 50, 50, 100);
     
     //Settings which sound is connected to which beacons
-//    for(int i = 0; i < NUM_CONTROLLERS; i++) {
-//        string number = "0" + ofToString(i+1);
-//        settings.setValue("settings:"+number+":Category", "Jungle");
-//        settings.setValue("settings:"+number+":Sound", "Bon");
-//    }
+    //    for(int i = 0; i < NUM_CONTROLLERS; i++) {
+    //        string number = "0" + ofToString(i+1);
+    //        settings.setValue("settings:"+number+":Category", "Jungle");
+    //        settings.setValue("settings:"+number+":Sound", "Bon");
+    //    }
+    
     string message = "";
     if( settings.loadFile(ofxiOSGetDocumentsDirectory() + "settings.xml") ){
         message = "settings.xml loaded from documents folder!";
@@ -117,7 +122,7 @@ void ofApp::setup(){
         recorders.push_back(recorder);
         mixer->addRecorder(recorder);
     }
-
+    
     int buffer = 20;
     int upperBuffer = HEIGHT / 8;
     float width = (WIDTH - buffer*4) / 3;
@@ -199,20 +204,24 @@ void ofApp::draw(){
         listFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - listFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
     }
     ofSetColor(127);
-//    ofDrawRectRounded(presets.bounds, 10);
+    //    ofDrawRectRounded(presets.bounds, 10);
+    ofNoFill();
     ofSetColor(255);
+//    ofDrawRectangle(presets.bounds);
+    ofDrawRectangle(presetsUp.bounds);
+    ofDrawRectangle(presetsDown.bounds);
     listFont.drawString(themes[(themeNum-1)%themes.size()],  presets.bounds.x + presets.bounds.width/2 - listFont.getStringBoundingBox(themes[(themeNum-1)%themes.size()], 0, 0).width / 2, presets.bounds.y + presets.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
     ofPopStyle();
 }
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::touchDown(ofTouchEventArgs & touch){
-//    if (touch.numTouches == 1) {
+    //    if (touch.numTouches == 1) {
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].onTouch(touch);
     }
@@ -231,20 +240,40 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
             allMuted = false;
         }
     }
-    if(presets.isInside(touch.x, touch.y)) {
-        int i = 0;
-//        cout<<players.begin()->first<<endl;
-        map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
-        for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
-            controllers[i].setPlayer(playerIt->second);
-//            controllers[i].setSoundName(playerIt->first);
-//            controllers[i].setCategoryName(themes[themeNum]);
-            i++;
+    if(presetsUp.isInside(touch.x, touch.y)) {
+        if(!keyboard->isKeyboardShowing()) {
+            int i = 0;
+            //        cout<<players.begin()->first<<endl;
+            map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
+            for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
+                controllers[i].setPlayer(playerIt->second);
+                //            controllers[i].setSoundName(playerIt->first);
+                //            controllers[i].setCategoryName(themes[themeNum]);
+                i++;
+            }
+            themeNum++;
+            themeNum %= themes.size();
+            //        for(int i = 0; i < NUM_CONTROLLERS; i++) {
+            //        }
+
         }
-        themeNum++;
-        themeNum %= themes.size();
-//        for(int i = 0; i < NUM_CONTROLLERS; i++) {
-//        }
+    } else if(presetsDown.isInside(touch.x, touch.y)) {
+        if(!keyboard->isKeyboardShowing()) {
+            int i = 0;
+            //        cout<<players.begin()->first<<endl;
+            map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
+            for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
+                controllers[i].setPlayer(playerIt->second);
+                //            controllers[i].setSoundName(playerIt->first);
+                //            controllers[i].setCategoryName(themes[themeNum]);
+                i++;
+            }
+            themeNum--;
+            themeNum %= themes.size();
+            //        for(int i = 0; i < NUM_CONTROLLERS; i++) {
+            //        }
+            
+        }
     }
 }
 
@@ -264,7 +293,7 @@ void ofApp::touchUp(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void ofApp::touchDoubleTap(ofTouchEventArgs & touch){
-
+    
 }
 
 //--------------------------------------------------------------
@@ -281,17 +310,17 @@ void ofApp::lostFocus(){
 
 //--------------------------------------------------------------
 void ofApp::gotFocus(){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMemoryWarning(){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::deviceOrientationChanged(int newOrientation){
-
+    
 }
 
 //--------------------------------------------------------------
@@ -303,5 +332,5 @@ void ofApp::audioIn( float * input, int bufferSize, int nChannels ) {
 
 //--------------------------------------------------------------
 void ofApp::audioOut( float * output, int bufferSize, int nChannels ) {
-        mixer->outputMix(output, bufferSize, nChannels);
+    mixer->outputMix(output, bufferSize, nChannels);
 }

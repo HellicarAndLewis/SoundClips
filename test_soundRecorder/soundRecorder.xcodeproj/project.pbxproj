@@ -66,6 +66,7 @@
 		0A1DAC09F322AE313A40706D /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxToggle.h; path = ../../../addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
 		15F2C6477A769C03A56D1401 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSlider.cpp; path = ../../../addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
 		17E65988300FBD9AAA2CD0CA /* ofxGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGui.h; path = ../../../addons/ofxGui/src/ofxGui.h; sourceTree = SOURCE_ROOT; };
+		1A3274871C4E43E70031E125 /* WavFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WavFile.h; sourceTree = "<group>"; };
 		1A9A74C51C43FE1400D1280E /* soundRecorder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = soundRecorder.mm; sourceTree = "<group>"; };
 		1A9A74C61C43FE1400D1280E /* soundRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundRecorder.h; sourceTree = "<group>"; };
 		1A9A74C81C44106800D1280E /* soundMixer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundMixer.cpp; sourceTree = "<group>"; };
@@ -314,6 +315,7 @@
 				1A9A74C61C43FE1400D1280E /* soundRecorder.h */,
 				1A9A74C81C44106800D1280E /* soundMixer.cpp */,
 				1A9A74C91C44106800D1280E /* soundMixer.h */,
+				1A3274871C4E43E70031E125 /* WavFile.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

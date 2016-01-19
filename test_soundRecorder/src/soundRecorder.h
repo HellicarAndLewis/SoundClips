@@ -10,17 +10,19 @@
 #define __soundRecorder__soundRecorder__
 
 #include "ofMain.h"
-#include "ofxXmlSettings.h"
+//#include "ofxXmlSettings.h"
+#include "WavFile.h"
 
 class soundRecorder {
 private:
     int playPos, recPos;
     bool playing, recording;
-    ofSoundBuffer buffer;
+    float* buffer;
     int bufferLength;
     string name;
     int length;
     int index;
+    WavFile wavWriter;
     
 public:
     soundRecorder();
@@ -29,7 +31,13 @@ public:
     void record();
     void stop();
     void stopRecording();
-    
+    void write(string _path);
+    void load(string _path);
+    void open(string _path, int i) {
+        wavWriter.open(_path, i);
+    };
+    float* getData();
+
     
     void fillRecording( float * input, int bufferSize, int nChannels );
     void outputRecording( float * output, int bufferSize, int nChannels );
@@ -40,7 +48,7 @@ public:
     void setDuration(float seconds);
     void setName(string _name) { name = _name; };
     void setIndex(int _index) { index = _index; };
-    void saveToXmlFile(ofxXmlSettings* settings);
+//    void saveToXmlFile(ofxXmlSettings* settings);
     
     float getDuration();
     int getPlayPos(){ return playPos; };
@@ -50,7 +58,7 @@ public:
     bool isRecording() { return recording; };
     int getIndex() { return index; };
     
-    ofSoundBuffer* getSoundBuffer() { return &buffer; };
+    //ofSoundBuffer* getSoundBuffer() { return &buffer; };
 };
 
 #endif /* defined(__soundRecorder__soundRecorder__) */

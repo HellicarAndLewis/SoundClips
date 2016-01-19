@@ -58,7 +58,7 @@ private:
     ofImage* arrow;
     
     bool* allMuted;
-
+    
     ofColor col;
     int mode;
     float smallX, smallY, smallHeight, smallWidth;
@@ -90,7 +90,7 @@ public:
     void setAllMuted(bool* _allMuted) {allMuted = _allMuted;};
     void setCategoryName(string _category) {categoryName = _category;};
     void setSoundName(string _sound) {soundName = _sound;};
-
+    
     void setCol(ofColor _col) {col = _col;};
     void setMode(int _mode) {mode = _mode;};
     
@@ -108,7 +108,7 @@ public:
     void drawLists();
     void setSoundFromXml(ofxXmlSettings* settings);
     void saveSoundToXml(ofxXmlSettings* settings);
-
+    
     void update();
     bool isInside(int _x, int _y, float boundsX, float boundsY, float width, float height);
     void play();

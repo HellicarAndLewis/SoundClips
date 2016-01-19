@@ -2,6 +2,7 @@
 
 #include "ofxiOS.h"
 #include "soundMixer.h"
+#include "ofxXmlSettings.h"
 
 class ofApp : public ofxiOSApp {
 	

@@ -10,6 +10,7 @@ void ofApp::setup(){
     ofSoundStreamSetup(1, 1);
     soundRecorder* recorder1 = new soundRecorder();
     soundRecorder* recorder2 = new soundRecorder();
+    recorder1->open(ofxiOSGetDocumentsDirectory() + "sound.wav", 2);
     recorders.push_back(recorder1);
     recorders.push_back(recorder2);
         
@@ -27,6 +28,8 @@ void ofApp::setup(){
     }
     cout<<message<<endl;
     
+    //recorders[0]->load(ofxiOSGetDocumentsDirectory() + "sound.wav");
+    
     //ofSoundBuffer buffer;
     //recorder = new soundRecorder();
 //    buffer.allocate(BUFFER_LENGTH, 1);
@@ -43,7 +46,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	
+    
 }
 
 //--------------------------------------------------------------
@@ -60,10 +63,10 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
         recorders[0]->play();
         cout<<"Playing 1..."<<endl;
     } else if(touch.numTouches == 4) {
-        recorders[0]->saveToXmlFile(&settings);
-        if( settings.saveFile(ofxiOSGetDocumentsDirectory() + "settings.xml") ) {
-            cout<<"Saved successfully!"<<endl;
-        }
+        recorders[0]->write(ofxiOSGetDocumentsDirectory() + "sound.wav");
+//        if( settings.saveFile(ofxiOSGetDocumentsDirectory() + "settings.xml") ) {
+//            cout<<"Saved successfully!"<<endl;
+//        }
     }
 }
 

@@ -10,29 +10,29 @@
 #define NUM_CONTROLLERS 9
 
 class ofApp : public ofxiOSApp {
-	
-    public:
-        void setup();
-        void update();
-        void draw();
-        void exit();
-	
-        void touchDown(ofTouchEventArgs & touch);
-        void touchMoved(ofTouchEventArgs & touch);
-        void touchUp(ofTouchEventArgs & touch);
-        void touchDoubleTap(ofTouchEventArgs & touch);
-        void touchCancelled(ofTouchEventArgs & touch);
-
-        void lostFocus();
-        void gotFocus();
-        void gotMemoryWarning();
-        void deviceOrientationChanged(int newOrientation);
     
-        void audioOut( float * output, int bufferSize, int nChannels );
-        void audioIn( float * input, int bufferSize, int nChannels );
+public:
+    void setup();
+    void update();
+    void draw();
+    void exit();
+    
+    void touchDown(ofTouchEventArgs & touch);
+    void touchMoved(ofTouchEventArgs & touch);
+    void touchUp(ofTouchEventArgs & touch);
+    void touchDoubleTap(ofTouchEventArgs & touch);
+    void touchCancelled(ofTouchEventArgs & touch);
+    
+    void lostFocus();
+    void gotFocus();
+    void gotMemoryWarning();
+    void deviceOrientationChanged(int newOrientation);
+    
+    void audioOut( float * output, int bufferSize, int nChannels );
+    void audioIn( float * input, int bufferSize, int nChannels );
     
     bool settingUp;
-
+    
     ofTrueTypeFont numberFont;
     ofTrueTypeFont listFont;
     SoundController controllers[NUM_CONTROLLERS];
@@ -49,7 +49,7 @@ class ofApp : public ofxiOSApp {
     bool allMuted;
     
     button muteAll;
-    button presets;
+    button presets, presetsDown, presetsUp;
     
     ofxXmlSettings settings;
     

@@ -16,8 +16,10 @@ soundRecorder::soundRecorder() {
     playing = false;
     recording = false;
     bufferLength = SAMPLES_PER_SECOND * 10; // 10 seconds
-    buffer.allocate(bufferLength, 1);
-    buffer.set(0);
+    buffer =  new float[bufferLength];
+    memset(buffer, 0, bufferLength * sizeof(float));
+    wavWriter.setFormat(1, 44100, 32);
+    wavWriter.setData(buffer, bufferLength);
 }
 
 void soundRecorder::play() {
@@ -35,7 +37,7 @@ void soundRecorder::record() {
 void soundRecorder::setDuration(float seconds) {
     bufferLength = seconds * SAMPLES_PER_SECOND;
     //buffer.clear();
-    buffer.setNumChannels(bufferLength);
+    //buffer.setNumChannels(bufferLength);
     //buffer.set(0);
 }
 
@@ -54,20 +56,24 @@ void soundRecorder::stopRecording() {
 
 void soundRecorder::fillRecording( float * input, int bufferSize, int nChannels ) {
     if(recording) {
-        for(int i = 0; i < bufferSize*nChannels; i++) {
-            if(recPos < bufferLength) {
-                buffer[recPos++] = input[i];
-                //memcpy(&buffer.getBuffer(), input, bufferSize* NUM_BYTES_PER_FLOAT);
-            }
-        }
+//        for(int i = 0; i < bufferSize*nChannels; i++) {
+//            if(recPos < bufferLength) {
+//                recPos++;
+//                //buffer[recPos++] = input[i];
+//                //memcpy(&buffer.getBuffer(), input, bufferSize* NUM_BYTES_PER_FLOAT);
+//            }
+//        }
+        wavWriter.write(input, bufferSize*nChannels);
     }
 }
 
 void soundRecorder::outputRecording( float * output, int bufferSize, int nChannels ) {
     if(playing) {
         for(int i = 0; i < bufferSize*nChannels; i++) {
-            if(playPos < recPos) {
-                output[i] += buffer[playPos++];
+            if(playPos < wavWriter.getLength()) {
+                //float val = wavWriter.data[playPos++];
+                //if(val > 0) cout<<val<<endl;
+                //output[i] += val;//buffer[playPos++];
             } else {
                 stop();
             }
@@ -75,10 +81,14 @@ void soundRecorder::outputRecording( float * output, int bufferSize, int nChanne
     }
 }
 
-void soundRecorder::saveToXmlFile(ofxXmlSettings* settings) {
-    //settings->pushTag("RECORDING");
-    for(int i = 0; i < bufferLength; i++) {
-        settings->addValue("POINT", buffer[i]);
-    }
-    //settings->popTag();
+void soundRecorder::write(string _path) {
+    wavWriter.save(_path);
+}
+
+void soundRecorder::load(string _path) {
+    wavWriter.load(_path);
+}
+
+float* soundRecorder::getData() {
+    return wavWriter.getData();
 }

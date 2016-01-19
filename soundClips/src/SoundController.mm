@@ -1,5 +1,5 @@
 //
-//  SoundController.cpp
+//  SoundController.mm
 //  soundClips
 //
 //  Created by James Bentley on 1/12/16.
@@ -109,7 +109,7 @@ void SoundController::play() {
             player->setPaused(false);
         }
         mode = modes::PLAYING;
-
+        
     }
 }
 
@@ -196,10 +196,17 @@ void SoundController::draw() {
     if(mode == modes::SETUP && width.val + 5 >= fullWidth && categoryName == "Recordings") {
         ofPushStyle();
         ofSetColor(255, 0, 0);
+        if(currentlyRecording) {
+            ofSetLineWidth(5);
+            ofNoFill();
+        }
+        else {
+           ofFill();
+        }
         ofDrawRectRounded(record.bounds, 10);
         ofSetColor(255);
         listFont->drawString("Rec", record.bounds.x + record.bounds.width/2 - listFont->getStringBoundingBox("Rec", 0, 0).width / 2, record.bounds.y + record.bounds.height/2 + listFont->getStringBoundingBox("Rec", 0, 0).height / 2);
-//        ofDrawRectangleRo(record.bounds);
+        //        ofDrawRectangleRo(record.bounds);
         ofPopStyle();
     }
 }
@@ -218,63 +225,65 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
             edit.bounds = ofRectangle(fullX + fullWidth - numberFont->getStringBoundingBox("0", 0, 0).height - buffer, fullY + buffer, numberFont->getStringBoundingBox("0", 0, 0).height, numberFont->getStringBoundingBox("0", 0, 0).height);
         }
     } else if(mode == modes::SETUP) {
-        for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
-            if(isInside(touch.x, touch.y, categoryButtons[i].bounds.x, categoryButtons[i].bounds.y, categoryButtons[i].bounds.width, categoryButtons[i].bounds.height)) {
-                categoryName = categoryButtons[i].name;
-                if(categoryName != "Recordings") {
-                    i = 0;
-                    soundName = (*allPlayers)[categoryName].begin()->first;
-                    for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
-                        soundButtons[i].name = soundIt->first;
-                        i++;
+        if(!keyboard->isKeyboardShowing()) {
+            for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
+                if(isInside(touch.x, touch.y, categoryButtons[i].bounds.x, categoryButtons[i].bounds.y, categoryButtons[i].bounds.width, categoryButtons[i].bounds.height)) {
+                    categoryName = categoryButtons[i].name;
+                    if(categoryName != "Recordings") {
+                        i = 0;
+                        soundName = (*allPlayers)[categoryName].begin()->first;
+                        for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
+                            soundButtons[i].name = soundIt->first;
+                            i++;
+                        }
+                    } else {
+                        int i = 0;
+                        soundName = (*allRecorders)[0]->getName();
+                        soundIndex = (*allRecorders)[0]->getIndex();
+                        for(; i < allRecorders->size(); i++) {
+                            soundButtons[i].name = (*allRecorders)[i]->getName();
+                        }
+                        for(; i < NUM_SOUND_BUTTONS; i++) {
+                            soundButtons[i].name = "";
+                        }
+                        
+                    }
+                } else if(isInside(touch.x, touch.y, soundButtons[i].bounds.x, soundButtons[i].bounds.y, soundButtons[i].bounds.width, soundButtons[i].bounds.height)) {
+                    soundName = soundButtons[i].name;
+                    soundIndex = soundButtons[i].index;
+                }
+            }
+            if(edit.isInside(touch.x, touch.y)) {
+                x.target(smallX);
+                y.target(smallY);
+                width.target(smallWidth);
+                height.target(smallHeight);
+                edit.bounds = ofRectangle(smallX + smallWidth - 60, smallY + buffer/2, 60, 60);
+                if(categoryName == "Recordings") {
+                    playingRecording = true;
+                    for(int i = 0; i < allRecorders->size(); i++) {
+                        if((*allRecorders)[i]->getIndex() == soundIndex) {
+                            setRecorder((*allRecorders)[i]);
+                            break;
+                        }
                     }
                 } else {
-                    int i = 0;
-                    soundName = (*allRecorders)[0]->getName();
-                    soundIndex = (*allRecorders)[0]->getIndex();
-                    for(; i < allRecorders->size(); i++) {
-                        soundButtons[i].name = (*allRecorders)[i]->getName();
+                    playingRecording = false;
+                    stop();
+                    for(auto it = (*allPlayers)[categoryName].begin(); it != (*allPlayers)[categoryName].end(); it++) {
+                        if(it->first == soundName) {
+                            player = it->second;
+                        }
                     }
-                    for(; i < NUM_SOUND_BUTTONS; i++) {
-                        soundButtons[i].name = "";
-                    }
-                    
                 }
-            } else if(isInside(touch.x, touch.y, soundButtons[i].bounds.x, soundButtons[i].bounds.y, soundButtons[i].bounds.width, soundButtons[i].bounds.height)) {
-                soundName = soundButtons[i].name;
-                soundIndex = soundButtons[i].index;
             }
-        }
-        if(edit.isInside(touch.x, touch.y)) {
-            x.target(smallX);
-            y.target(smallY);
-            width.target(smallWidth);
-            height.target(smallHeight);
-            edit.bounds = ofRectangle(smallX + smallWidth - 60, smallY + buffer/2, 60, 60);
-            if(categoryName == "Recordings") {
-                playingRecording = true;
+            if(categoryName == "Recordings" && record.isInside(touch.x, touch.y)) {
+                currentlyRecording = true;
                 for(int i = 0; i < allRecorders->size(); i++) {
                     if((*allRecorders)[i]->getIndex() == soundIndex) {
-                        setRecorder((*allRecorders)[i]);
+                        (*allRecorders)[i]->record();
                         break;
                     }
-                }
-            } else {
-                playingRecording = false;
-                stop();
-                for(auto it = (*allPlayers)[categoryName].begin(); it != (*allPlayers)[categoryName].end(); it++) {
-                    if(it->first == soundName) {
-                        player = it->second;
-                    }
-                }
-            }
-        }
-        if(categoryName == "Recordings" && record.isInside(touch.x, touch.y)) {
-            currentlyRecording = true;
-            for(int i = 0; i < allRecorders->size(); i++) {
-                if((*allRecorders)[i]->getIndex() == soundIndex) {
-                    (*allRecorders)[i]->record();
-                    break;
                 }
             }
         }
@@ -303,30 +312,32 @@ bool SoundController::isInside(int _x, int _y, float boundsX, float boundsY, flo
 
 void SoundController::onTouchMoved(ofTouchEventArgs & touch) {
     if(mode == modes::SETUP) {
-        for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
-            if(isInside(touch.x, touch.y, categoryButtons[i].bounds.x, categoryButtons[i].bounds.y, categoryButtons[i].bounds.width, categoryButtons[i].bounds.height)) {
-                categoryName = categoryButtons[i].name;
-                if(categoryName != "Recordings") {
-                    i = 0;
-                    soundName = (*allPlayers)[categoryName].begin()->first;
-                    for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
-                        soundButtons[i].name = soundIt->first;
-                        i++;
+        if(!keyboard->isKeyboardShowing()) {
+            for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
+                if(isInside(touch.x, touch.y, categoryButtons[i].bounds.x, categoryButtons[i].bounds.y, categoryButtons[i].bounds.width, categoryButtons[i].bounds.height)) {
+                    categoryName = categoryButtons[i].name;
+                    if(categoryName != "Recordings") {
+                        i = 0;
+                        soundName = (*allPlayers)[categoryName].begin()->first;
+                        for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
+                            soundButtons[i].name = soundIt->first;
+                            i++;
+                        }
+                    } else {
+                        int i = 0;
+                        soundName = (*allRecorders)[0]->getName();
+                        for(; i < allRecorders->size(); i++) {
+                            soundButtons[i].name = (*allRecorders)[i]->getName();
+                        }
+                        for(; i < NUM_SOUND_BUTTONS; i++) {
+                            soundButtons[i].name = "";
+                        }
+                        
                     }
-                } else {
-                    int i = 0;
-                    soundName = (*allRecorders)[0]->getName();
-                    for(; i < allRecorders->size(); i++) {
-                        soundButtons[i].name = (*allRecorders)[i]->getName();
-                    }
-                    for(; i < NUM_SOUND_BUTTONS; i++) {
-                        soundButtons[i].name = "";
-                    }
-                    
+                } else if(isInside(touch.x, touch.y, soundButtons[i].bounds.x, soundButtons[i].bounds.y, soundButtons[i].bounds.width, soundButtons[i].bounds.height)) {
+                    soundName = soundButtons[i].name;
+                    soundIndex = soundButtons[i].index;
                 }
-            } else if(isInside(touch.x, touch.y, soundButtons[i].bounds.x, soundButtons[i].bounds.y, soundButtons[i].bounds.width, soundButtons[i].bounds.height)) {
-                soundName = soundButtons[i].name;
-                soundIndex = soundButtons[i].index;
             }
         }
     }
