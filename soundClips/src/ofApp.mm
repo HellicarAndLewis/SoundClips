@@ -142,17 +142,6 @@ void ofApp::setup(){
             controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + width*(y%3), width, height);
         }
     }
-    //Set all the sounds to the first theme!
-//    int i = 0;
-//    map<string, ofSoundPlayer*> themeSounds = players.find(themes[themeNum])->second;
-//    for(auto playerIt = themeSounds.begin(); playerIt != themeSounds.end(); playerIt++) {
-//        controllers[i].setPlayer(playerIt->second);
-////        controllers[i].setSoundName(playerIt->first);
-////        controllers[i].setCategoryName(themes[themeNum]);
-////        i++;
-//    }
-//    themeNum++;
-//    themeNum %= themes.size();
 }
 
 //--------------------------------------------------------------

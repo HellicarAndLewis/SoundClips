@@ -38,7 +38,8 @@ public:
     void setRecPos(int pos = 0) { recPos = pos; };
     void setDuration(float seconds);
     void setName(string _name) { name = _name; };
-    void setIndex(int _index) {index = _index;};
+    void setIndex(int _index) { index = _index; };
+    void saveToXmlFile(ofxXmlSettings* recording);
     
     float getDuration();
     int getPlayPos(){ return playPos; };

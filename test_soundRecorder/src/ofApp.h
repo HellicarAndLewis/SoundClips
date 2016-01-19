@@ -29,6 +29,8 @@ class ofApp : public ofxiOSApp {
         soundMixer mixer;
         vector<soundRecorder*> recorders;
     
+        ofxXmlSettings settings;
+    
         ofSoundPlayer player;
     
         ofTrueTypeFont font;

@@ -12,6 +12,7 @@
 soundRecorder::soundRecorder() {
     playPos = 0;
     recPos = 0;
+    length = 0;
     playing = false;
     recording = false;
     bufferLength = SAMPLES_PER_SECOND * 10; // 10 seconds
@@ -33,13 +34,22 @@ void soundRecorder::record() {
 
 void soundRecorder::setDuration(float seconds) {
     bufferLength = seconds * SAMPLES_PER_SECOND;
-    buffer.clear();
+    //buffer.clear();
     buffer.setNumChannels(bufferLength);
-    buffer.set(0);
+    //buffer.set(0);
 }
 
 float soundRecorder::getDuration() {
     return bufferLength / SAMPLES_PER_SECOND;
+}
+
+void soundRecorder::stop() {
+    playPos = 0;
+    playing  = false;
+}
+
+void soundRecorder::stopRecording() {
+    recording = false;
 }
 
 void soundRecorder::fillRecording( float * input, int bufferSize, int nChannels ) {
@@ -56,11 +66,19 @@ void soundRecorder::fillRecording( float * input, int bufferSize, int nChannels 
 void soundRecorder::outputRecording( float * output, int bufferSize, int nChannels ) {
     if(playing) {
         for(int i = 0; i < bufferSize*nChannels; i++) {
-            if(playPos < bufferLength) {
+            if(playPos < recPos) {
                 output[i] += buffer[playPos++];
             } else {
-                playPos = 0;
+                stop();
             }
         }
     }
+}
+
+void soundRecorder::saveToXmlFile(ofxXmlSettings* settings) {
+    //settings->pushTag("RECORDING");
+    for(int i = 0; i < bufferLength; i++) {
+        settings->addValue("POINT", buffer[i]);
+    }
+    //settings->popTag();
 }
