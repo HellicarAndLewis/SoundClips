@@ -55,7 +55,6 @@ void soundRecorder::fillRecording( float * input, int bufferSize, int nChannels 
         for(int i = 0; i < bufferSize*nChannels; i++) {
             if(recPos < bufferLength) {
                 buffer[recPos++] = input[i];
-                //memcpy(&buffer.getBuffer(), input, bufferSize* NUM_BYTES_PER_FLOAT);
             }
         }
     }

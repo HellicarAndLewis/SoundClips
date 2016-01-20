@@ -11,10 +11,12 @@
 SoundController::SoundController() {
     playingRecording = false;
     currentlyRecording = false;
+    changingEstimote = false;
     mode = modes::IDLE;
     soundIndex = 0;
     recorder = NULL;
     player = NULL;
+    newBeacon = "";
 }
 
 void SoundController::setPosition(float _x, float _y, float _width, float _height) {
@@ -41,33 +43,46 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     
     ofRectangle numberBoundingBox = numberFont->getStringBoundingBox("0" + ofToString(number), 0, 0);
     int CategoryX = 2*buffer;
-    int CategoryY = ofGetHeight() / 8 + buffer + listFont->getStringBoundingBox(allPlayers->begin()->first, 0, 0).height + numberBoundingBox.height;
+    int CategoryY = fullY + buffer+ catFont->getStringBoundingBox(allPlayers->begin()->first, 0, 0).height + numberBoundingBox.height;
     int CategoryButtonWidth = ( fullWidth - buffer*2 ) / 2;
     int CategoryButtonHeight = ( fullHeight - numberBoundingBox.height - buffer*4 ) / 9;
     
     for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
-        categoryButtons[i].bounds = ofRectangle(CategoryX, CategoryY, CategoryButtonWidth, CategoryButtonHeight);
-        soundButtons[i].bounds = ofRectangle(CategoryX + CategoryButtonWidth, CategoryY,  CategoryButtonWidth, CategoryButtonHeight);
+        categoryButtons[i].bounds = categoryButtons[i].savedBounds = ofRectangle(CategoryX, CategoryY, CategoryButtonWidth, CategoryButtonHeight);
+        soundButtons[i].bounds = soundButtons[i].savedBounds = ofRectangle(CategoryX + CategoryButtonWidth, CategoryY,  CategoryButtonWidth, CategoryButtonHeight);
         soundButtons[i].index = i;
         CategoryY += CategoryButtonHeight;
     }
-    int i = 0;
-    for(auto it = allPlayers->begin(); it != allPlayers->end(); it++) {
-        categoryButtons[i].name = it->first;
-        i++;
-    }
-    categoryButtons[i].name = "Recordings";
     
-    i = 0;
-    for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
-        soundButtons[i].name = soundIt->first;
-        i++;
+    vector<string> catNames;
+    for(auto it = allPlayers->begin(); it != allPlayers->end(); it++) {
+        catNames.push_back(it->first);
     }
+    
+    catNames.push_back("Recordings");
+    for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
+        categoryButtons[i].name = catNames[i];
+    }
+    
+    vector<string> soundNames;
+    for(auto it = allPlayers->begin(); it != allPlayers->end(); it++) {
+        soundNames.push_back(it->first);
+    }
+    
+    for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
+        soundButtons[i].name = soundNames[i];
+    }
+    
     edit.name = "Edit";
     edit.bounds = ofRectangle(smallX + smallWidth - 60, smallY + buffer/2, 60, 60);
     
+    edit.savedBounds = ofRectangle(fullX + fullWidth - numberFont->getStringBoundingBox("0", 0, 0).height - buffer, fullY + buffer, numberFont->getStringBoundingBox("0", 0, 0).height, numberFont->getStringBoundingBox("0", 0, 0).height);
+    
     record.name = "Record";
     record.bounds = ofRectangle(ofGetWidth() - buffer*2 - 50 - width.val/2, buffer*2, 100, 100);
+    
+    changeEstimote.name = "changeEstimote";
+    changeEstimote.bounds= ofRectangle(20 + (ofGetWidth() - 20*4) / 6 - 50, ofGetHeight()/16 - 50, 100, 100);
 }
 
 void SoundController::setPlayer(ofSoundPlayer* _input) {
@@ -87,7 +102,7 @@ void SoundController::setPlayer(ofSoundPlayer* _input) {
     categoryName = category;
 }
 
-void SoundController::setRecorder(soundRecorder* _input) {
+void SoundController::setRecorder(soundRecording* _input) {
     recorder = _input;
     categoryName = "Recordings";
     soundName = recorder->getName();
@@ -109,7 +124,6 @@ void SoundController::play() {
             player->setPaused(false);
         }
         mode = modes::PLAYING;
-        
     }
 }
 
@@ -164,34 +178,23 @@ void SoundController::update() {
     if(!keyboard->isKeyboardShowing()) {
         keyboard->setText("");
     }
+    if(mode == modes::SETUP) {
+        edit.bounds.y = edit.savedBounds.y - (fullY - y.val);
+        for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
+            categoryButtons[i].bounds.y = categoryButtons[i].savedBounds.y - (fullY - y.val);
+            soundButtons[i].bounds.y = soundButtons[i].savedBounds.y - (fullY - y.val);
+        }
+        if(!keyboard->isKeyboardShowing() && mode == modes::SETUP && width.val + 5 >= fullWidth) {
+            y.target(fullY);
+        }
+    }
 }
 
 void SoundController::draw() {
     ofPushStyle();
-    ofSetColor(col.r, col.g, col.b);
-    ofFill();
-    ofDrawRectRounded(x.val, y.val, width.val, height.val, 10);
-    ofSetColor(255);
-    numberFont->drawString("0" + ofToString(number), x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + 10);
-    if(mode != modes::SETUP && width.val - 5 <= smallWidth) {
-        listFont->drawString(categoryName,  x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + listFont->getStringBoundingBox("d", 0, 0).height + buffer*2);
-        listFont->drawString(soundName, x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + listFont->getStringBoundingBox("d", 0, 0).height + buffer + listFont->getStringBoundingBox("d", 0, 0).height + buffer*3);
-        gear->draw(edit.bounds);
-    }
-    ofPopStyle();
-    if(mode == modes::PLAYING) {
-        if(categoryName != "Recordings") {
-            ofDrawRectRounded(x.val + buffer, y.val + height.val - buffer - 10, ofMap(player->getPosition(), 0, 1.0, 0, width.val - buffer*2), 10, 10);
-        } else {
-            ofDrawRectRounded(x.val + buffer, y.val + height.val - buffer - 10, ofMap(recorder->getPlayPos(), 0, recorder->getRecPos(), 0, width.val - buffer*2), 10, 10);
-        }
-    }
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
-        listFont->drawString(categoryName,  x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width , y.val + listFont->getStringBoundingBox("d", 0, 0).height + buffer);
-        listFont->drawString(soundName, x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width, y.val + listFont->getStringBoundingBox("d", 0, 0).height + buffer*3 + listFont->getStringBoundingBox("d", 0, 0).height);
-        drawLists();
         ofSetColor(255);
-        arrow->draw(edit.bounds);
+        ofDrawRectRounded(changeEstimote.bounds, 10);
     }
     if(mode == modes::SETUP && width.val + 5 >= fullWidth && categoryName == "Recordings") {
         ofPushStyle();
@@ -201,13 +204,44 @@ void SoundController::draw() {
             ofNoFill();
         }
         else {
-           ofFill();
+            ofFill();
         }
         ofDrawRectRounded(record.bounds, 10);
         ofSetColor(255);
-        listFont->drawString("Rec", record.bounds.x + record.bounds.width/2 - listFont->getStringBoundingBox("Rec", 0, 0).width / 2, record.bounds.y + record.bounds.height/2 + listFont->getStringBoundingBox("Rec", 0, 0).height / 2);
-        //        ofDrawRectangleRo(record.bounds);
+        catFont->drawString("Rec", record.bounds.x + record.bounds.width/2 - catFont->getStringBoundingBox("Rec", 0, 0).width / 2, record.bounds.y + record.bounds.height/2 + catFont->getStringBoundingBox("Rec", 0, 0).height / 2);
         ofPopStyle();
+    }
+    ofSetColor(col.r, col.g, col.b);
+    ofFill();
+    ofDrawRectRounded(x.val, y.val, width.val, height.val, 10);
+    ofSetColor(255);
+    numberFont->drawString("0" + ofToString(number), x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + 10);
+    if(mode != modes::SETUP && width.val - 5 <= smallWidth) {
+        catFont->drawString(categoryName,  x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + catFont->getStringBoundingBox("d", 0, 0).height + buffer*2);
+        soundFont->drawString(soundName, x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + catFont->getStringBoundingBox("d", 0, 0).height + buffer + soundFont->getStringBoundingBox("d", 0, 0).height + buffer*3);
+        gear->draw(edit.bounds);
+    }
+    ofPopStyle();
+    ofPushStyle();
+    if(mode == modes::PLAYING) {
+        ofFill();
+        if(categoryName != "Recordings") {
+            ofDrawRectRounded(x.val + buffer, y.val + height.val - buffer - 10, ofMap(player->getPosition(), 0, 1.0, 0, width.val - buffer*2), 10, 10);
+        } else {
+            ofDrawRectRounded(x.val + buffer, y.val + height.val - buffer - 10, ofMap(recorder->getPlayer()->getPosition(), 0, 1.0, 0, width.val - buffer*2), 10, 10);
+        }
+    }
+    ofPopStyle();
+    if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
+        catFont->drawString(categoryName,  x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width , y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer);
+        soundFont->drawString(soundName, x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width, y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer*3 + soundFont->getStringBoundingBox("d", 0, 0).height);
+        if(!changingEstimote) {
+            drawLists();
+            ofSetColor(255);
+            arrow->draw(edit.bounds);
+        } else {
+            drawEstimoteSetup();
+        }
     }
 }
 
@@ -225,7 +259,7 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
             edit.bounds = ofRectangle(fullX + fullWidth - numberFont->getStringBoundingBox("0", 0, 0).height - buffer, fullY + buffer, numberFont->getStringBoundingBox("0", 0, 0).height, numberFont->getStringBoundingBox("0", 0, 0).height);
         }
     } else if(mode == modes::SETUP) {
-        if(!keyboard->isKeyboardShowing()) {
+        if(!keyboard->isKeyboardShowing() && !changingEstimote) {
             for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
                 if(isInside(touch.x, touch.y, categoryButtons[i].bounds.x, categoryButtons[i].bounds.y, categoryButtons[i].bounds.width, categoryButtons[i].bounds.height)) {
                     categoryName = categoryButtons[i].name;
@@ -281,8 +315,23 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
                 currentlyRecording = true;
                 for(int i = 0; i < allRecorders->size(); i++) {
                     if((*allRecorders)[i]->getIndex() == soundIndex) {
-                        (*allRecorders)[i]->record();
+                        (*allRecorders)[i]->startRecording();
+                        soundButtons[i].active = true;
                         break;
+                    }
+                }
+            }
+        }
+        if(!keyboard->isKeyboardShowing()) {
+            if (changeEstimote.isInside(touch.x, touch.y)) {
+                if(!changingEstimote) {
+                    changingEstimote = true;
+                    newBeacon = "";
+                } else {
+                    changingEstimote = false;
+                    if(newBeacon != "") {
+                        beaconName= newBeacon;
+                        newBeacon = "";
                     }
                 }
             }
@@ -295,13 +344,12 @@ void SoundController::onTouchUp(ofTouchEventArgs & touch) {
         if(!keyboard->isKeyboardShowing()) {
             keyboard->openKeyboard();
             keyboard->setVisible(true);
+            y.target(buffer);
         }
         currentlyRecording = false;
         for(int i = 0; i < allRecorders->size(); i++) {
-            if((*allRecorders)[i]->getIndex() == soundIndex) {
-                (*allRecorders)[i]->stopRecording();
-                break;
-            }
+            (*allRecorders)[i]->stopRecording();
+            soundButtons[i].active = false;
         }
     }
 }
@@ -312,7 +360,7 @@ bool SoundController::isInside(int _x, int _y, float boundsX, float boundsY, flo
 
 void SoundController::onTouchMoved(ofTouchEventArgs & touch) {
     if(mode == modes::SETUP) {
-        if(!keyboard->isKeyboardShowing()) {
+        if(!keyboard->isKeyboardShowing() && !changingEstimote) {
             for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
                 if(isInside(touch.x, touch.y, categoryButtons[i].bounds.x, categoryButtons[i].bounds.y, categoryButtons[i].bounds.width, categoryButtons[i].bounds.height)) {
                     categoryName = categoryButtons[i].name;
@@ -353,20 +401,20 @@ void SoundController::drawLists() {
             ofPushStyle();
             ofSetColor(255);
             ofFill();
-            ofDrawRectangle(categoryButtons[i].bounds);
+            ofDrawRectRounded(categoryButtons[i].bounds, 10);
             ofPopStyle();
         }
-        listFont->drawString(it->first, categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
+        catFont->drawString(it->first, categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
         i++;
     }
     if(categoryName == "Recordings") {
         ofPushStyle();
         ofSetColor(255);
         ofFill();
-        ofDrawRectangle(categoryButtons[i].bounds);
+        ofDrawRectRounded(categoryButtons[i].bounds, 10);
         ofPopStyle();
     }
-    listFont->drawString("Recordings", categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
+    catFont->drawString("Recordings", categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
     if(categoryName != "Recordings") {
         i = 0;
         for(auto it = (*allPlayers)[categoryName].begin(); it != (*allPlayers)[categoryName].end(); it++) {
@@ -374,10 +422,10 @@ void SoundController::drawLists() {
                 ofPushStyle();
                 ofSetColor(255);
                 ofFill();
-                ofDrawRectangle(soundButtons[i].bounds);
+                ofDrawRectRounded(soundButtons[i].bounds, 10);
                 ofPopStyle();
             }
-            listFont->drawString(it->first, soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
+            soundFont->drawString(it->first, soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
             i++;
         }
     } else {
@@ -386,104 +434,126 @@ void SoundController::drawLists() {
                 ofPushStyle();
                 ofSetColor(255);
                 ofFill();
-                ofDrawRectangle(soundButtons[i].bounds);
+                ofDrawRectRounded(soundButtons[i].bounds, 10);
                 ofPopStyle();
             }
-            listFont->drawString((*allRecorders)[i]->getName(), soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
+            soundFont->drawString((*allRecorders)[i]->getName(), soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
         }
     }
     for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
-        ofDrawRectangle(categoryButtons[i].bounds);
-        ofDrawRectangle(soundButtons[i].bounds);
+//        ofDrawRectangle(categoryButtons[i].bounds);
+        ofPushStyle();
+        if(soundButtons[i].active) {
+            ofSetColor(255, 0, 0);
+            ofFill();
+            ofDrawRectRounded(soundButtons[i].bounds, 10);
+            ofSetColor(255);
+            soundFont->drawString("Recording...", soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
+        }
+//        ofDrawRectangle(soundButtons[i].bounds);
+
+        ofPopStyle();
     }
     ofPopStyle();
 }
 
-void SoundController::setSoundFromXml(ofxXmlSettings* settings) {
-    //I am so so sorry for this...
-    string num;
-    switch (number) {
-        case 1:
-            num = "ONE";
-            break;
-        case 2:
-            num = "TWO";
-            break;
-        case 3:
-            num = "THREE";
-            break;
-        case 4:
-            num = "FOUR";
-            break;
-        case 5:
-            num = "FIVE";
-            break;
-        case 6:
-            num = "SIX";
-            break;
-        case 7:
-            num = "SEVEN";
-            break;
-        case 8:
-            num = "EIGHT";
-            break;
-        case 9:
-            num = "NINE";
-            break;
-        default:
-            num = "";
-            break;
+void SoundController::drawEstimoteSetup() {
+    ofPushStyle();
+    ofSetColor(0);
+    int x, y;
+    x = fullX + fullWidth/2;
+    y = fullY + buffer*4 + numberFont->getStringBoundingBox("22", 0, 0).height;
+    string message = "Setting Up A New Beacon...";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "Current Beacon: " + beaconName;
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    int numMoving = 0;
+    map<string, bool>* movers = estimotes->getNearables();
+    for(auto it = movers->begin(); it != movers->end(); it++) {
+        if(it->second) {
+            newBeacon = it->first;
+            numMoving++;
+        }
     }
-    if(num != "") {
-        categoryName = settings->getValue("CONTROLLERS:"+num+":CATEGORY", "Space");
-        soundName = settings->getValue("CONTROLLERS:"+num+":SOUND", "Coff");
+    if(numMoving > 1) {
+        y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+        message = "More than One Beacon Moving!";
+        newBeacon = "";
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    } else {
+        y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+        message = "New Beacon: " + newBeacon;
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    }
+    y += buffer*4;
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "To setup a new beacon:";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y+=buffer*2;
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "Make sure all nearby beacons are still.";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y+= buffer*2;
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "Move the Beacon you would like";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "to connect to this controller.";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y+= buffer*2;
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "Once your new beacons name is displayed";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "press the button in the";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    
+    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+    message = "top left corner again to save it.";
+    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    ofPopStyle();
+    
+
+}
+
+void SoundController::setFromXml(ofxXmlSettings* settings) {
+    categoryName = settings->getValue("CONTROLLER:CATEGORY", "Space", number-1);
+    beaconName = settings->getValue("CONTROLLER:BEACON", "0", number-1);
+    if(categoryName != "Recordings") {
+        soundName = settings->getValue("CONTROLLER:SOUND", "Coff", number-1);
         ofSoundPlayer* newPlayer = (*allPlayers)[categoryName][soundName];
         setPlayer(newPlayer);
+    } else {
+        ofSoundPlayer* newPlayer = (*allPlayers)["Space"]["Coff"];
+        setPlayer(newPlayer);
+        categoryName = settings->getValue("CONTROLLER:CATEGORY", "Space", number-1);
+        soundIndex = ofToInt(settings->getValue("CONTROLLER:SOUND", ofToString(1), number-1));
+        for(int i = 0; i < allRecorders->size(); i++) {
+            if((*allRecorders)[i]->getIndex() == soundIndex) {
+                setRecorder((*allRecorders)[i]);
+                soundName = (*allRecorders)[i]->getName();
+                playingRecording = true;
+                break;
+            }
+        }
     }
 }
 
-void SoundController::saveSoundToXml(ofxXmlSettings* settings) {
-    string num;
-    switch (number) {
-        case 1:
-            num = "ONE";
-            break;
-        case 2:
-            num = "TWO";
-            break;
-        case 3:
-            num = "THREE";
-            break;
-        case 4:
-            num = "FOUR";
-            break;
-        case 5:
-            num = "FIVE";
-            break;
-        case 6:
-            num = "SIX";
-            break;
-        case 7:
-            num = "SEVEN";
-            break;
-        case 8:
-            num = "EIGHT";
-            break;
-        case 9:
-            num = "NINE";
-            break;
-        default:
-            num = "";
-            break;
+void SoundController::saveToXml(ofxXmlSettings* settings) {
+    settings->setValue("CONTROLLER:CATEGORY", categoryName, number-1);
+    if(categoryName == "Recordings") {
+        settings->setValue("CONTROLLER:SOUND", ofToString(soundIndex), number-1);
+    } else {
+        settings->setValue("CONTROLLER:SOUND", soundName, number-1);
     }
-    if(num != "") {
-        if(categoryName == "Recordings") {
-            settings->setValue("CONTROLLERS:"+num+":CATEGORY", allPlayers->begin()->first);
-            settings->setValue("CONTROLLERS:"+num+":SOUND", allPlayers->begin()->second.begin()->first);
-        } else {
-            settings->setValue("CONTROLLERS:"+num+":CATEGORY", categoryName);
-            settings->setValue("CONTROLLERS:"+num+":SOUND", soundName);
-        }
-        settings->saveFile(ofxiOSGetDocumentsDirectory() + "settings.xml");
-    }
+    settings->setValue("CONTROLLER:BEACON", beaconName, number-1);
+    settings->saveFile(ofxiOSGetDocumentsDirectory() + "settings.xml");
 }

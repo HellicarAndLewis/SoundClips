@@ -1,38 +1,45 @@
-<CONTROLLERS>
-    <ONE>
+<CONTROLLER>
         <CATEGORY>Jungle</CATEGORY>
         <SOUND>Aon</SOUND>
-    </ONE>
-    <TWO>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </TWO>
-    <THREE>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </THREE>
-    <FOUR>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </FOUR>
-    <FIVE>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </FIVE>
-    <SIX>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </SIX>
-    <SEVEN>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </SEVEN>
-    <EIGHT>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </EIGHT>
-    <NINE>
-        <CATEGORY>Jungle</CATEGORY>
-        <SOUND>Aon</SOUND>
-    </NINE>
-</CONTROLLERS>
+        <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>
+<CONTROLLER>
+    <CATEGORY>Jungle</CATEGORY>
+    <SOUND>Aon</SOUND>
+    <BEACON>09af77b7addc328f</BEACON>
+</CONTROLLER>

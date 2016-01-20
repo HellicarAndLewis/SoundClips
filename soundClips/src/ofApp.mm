@@ -17,7 +17,7 @@ void ofApp::setup(){
     settingUp = false;
     
     //Setup the sound Mixer
-    mixer = new soundMixer();
+//    mixer = new soundMixer();
     
     //mute All button
     muteAll.name = "Mute";
@@ -40,16 +40,25 @@ void ofApp::setup(){
     //    }
     
     string message = "";
+    
     if( settings.loadFile(ofxiOSGetDocumentsDirectory() + "settings.xml") ){
         message = "settings.xml loaded from documents folder!";
     }else if( settings.loadFile("settings/settings.xml") ){
-        message = "settingss.xml loaded from data folder!";
+        message = "settings.xml loaded from data folder!";
     }else{
         message = "unable to load settings.xml check data/ folder";
     }
     cout<<message<<endl;
     
-    string shouldBeJungle = settings.getValue("CONTROLLERS:ONE:CATEGORY", "Space");
+    message = "";
+    if( recorderNames.loadFile(ofxiOSGetDocumentsDirectory() + "recorderNames.xml") ){
+        message = "recorderNames.xml loaded from documents folder!";
+    }else if( recorderNames.loadFile("settings/recorderNames.xml") ){
+        message = "recorderNames.xml.xml loaded from data folder!";
+    }else{
+        message = "unable to load recorderNames.xml.xml check data/ folder";
+    }
+    cout<<message<<endl;
     
     //Load all the Preset sounds
     ofDirectory soundDir("sounds");
@@ -74,7 +83,7 @@ void ofApp::setup(){
                 vector<string> split2 = ofSplitString(soundName, ".");
                 soundName = split2[0];
                 themePlayers[soundName] = player;
-                mixer->addPlayer(player);
+//                mixer->addPlayer(player);
             }
             players[themeName] = themePlayers;
         }
@@ -84,7 +93,8 @@ void ofApp::setup(){
     themeNum = 0;
     
     numberFont.load("fonts/ITCAvantGardePro-Demi.otf", 100);
-    listFont.load("fonts/Geo.otf", 32);
+    categoryFont.load("fonts/Geo.otf", 24);
+    soundFont.load("fonts/Geo.otf", 20);
     
     cols[0] = ofColor(126, 166, 187);
     cols[1] = ofColor(188, 187, 22);
@@ -96,16 +106,6 @@ void ofApp::setup(){
     cols[7] = ofColor(191, 150, 91);
     cols[8] = ofColor(203, 170, 120);
     
-    names[0] = "09af77b7addc328f";
-    names[1] = "1c1f067c7123818c";
-    names[2] = "25897c39e0aec284";
-    names[3] = "25a2d32f97dc41cf";
-    names[4] = "b566fbd88ea2be58";
-    names[5] = "410d2e8026ed72dd";
-    names[6] = "a9a068d3966fa705";
-    names[7] = "e7738eeea0f135b3";
-    names[8] = "fafe77815408205b";
-    
     gear.load("images/gear.png");
     arrow.load("images/arrow.png");
     
@@ -115,12 +115,15 @@ void ofApp::setup(){
     keyboard->setFontColor(0,0,0, 0);
     keyboard->setFontSize(0);
     
+    recorderNames.pushTag("RECORDERS");
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
-        soundRecorder* recorder = new soundRecorder();
-        recorder->setName("Empty " + ofToString(recorders.size()));
+        soundRecording* recorder = new soundRecording();
+        recorder->setName(recorderNames.getValue("NAME", "Empty", i));
         recorder->setIndex(i);
+        recorder->setFilePath(ofxiOSGetDocumentsDirectory() + ofToString(i) + ".wav");
+        recorder->loadSample();
         recorders.push_back(recorder);
-        mixer->addRecorder(recorder);
+        //mixer->addRecorder(recorder);
     }
     
     int buffer = 20;
@@ -132,13 +135,15 @@ void ofApp::setup(){
             int i = x + (int)(3*y);
             controllers[i].setRecorders(&recorders);
             controllers[i].setPlayers(&players);
-            controllers[i].setBeaconName(names[i]);
+//            controllers[i].setBeaconName(names[i]);
             controllers[i].setNumber(i+1);
             controllers[i].setNumberFont(&numberFont);
-            controllers[i].setSoundFromXml(&settings);
+            controllers[i].setFromXml(&settings);
+            controllers[i].setMovementManager(manager);
             //controllers[i].setPlayer(players["Space"]["Aon"]);
             //controllers[i].setRecorder(recorders[0]);
-            controllers[i].setListFont(&listFont);
+            controllers[i].setCatFont(&categoryFont);
+            controllers[i].setSoundFont(&soundFont);
             controllers[i].setCol(cols[i]);
             controllers[i].setArrow(&arrow);
             controllers[i].setGear(&gear);
@@ -172,15 +177,6 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0);
-    
-    for(int i = 0; i < NUM_CONTROLLERS; i++) {
-        if(controllers[i].getMode() != SoundController::modes::SETUP) controllers[i].draw();
-    }
-    if(settingUp) {
-        for(int i = 0; i < NUM_CONTROLLERS; i++) {
-            if(controllers[i].getMode() == SoundController::modes::SETUP) controllers[i].draw();
-        }
-    }
     if(!allMuted) {
         map<string, bool>* list = manager->getNearables();
         for(auto nearable = list->begin(); nearable != list->end(); nearable++) {
@@ -196,22 +192,33 @@ void ofApp::draw(){
         ofSetColor(127);
         ofDrawRectRounded(muteAll.bounds, 10);
         ofSetColor(255);
-        listFont.drawString("Unmute", muteAll.bounds.x + muteAll.bounds.width/2 - listFont.getStringBoundingBox("Unmute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + listFont.getStringBoundingBox("Unmute", 0, 0).height / 2);
+        categoryFont.drawString("Unmute", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("Unmute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("Unmute", 0, 0).height / 2);
     } else {
         ofSetColor(127);
         ofDrawRectRounded(muteAll.bounds, 10);
         ofSetColor(255);
-        listFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - listFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
+        categoryFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("Mute", 0, 0).height / 2);
     }
-    ofSetColor(127);
     //    ofDrawRectRounded(presets.bounds, 10);
-    ofNoFill();
-    ofSetColor(255);
-//    ofDrawRectangle(presets.bounds);
-    ofDrawRectangle(presetsUp.bounds);
-    ofDrawRectangle(presetsDown.bounds);
-    listFont.drawString(themes[(themeNum-1)%themes.size()],  presets.bounds.x + presets.bounds.width/2 - listFont.getStringBoundingBox(themes[(themeNum-1)%themes.size()], 0, 0).width / 2, presets.bounds.y + presets.bounds.height/2 + listFont.getStringBoundingBox("Mute", 0, 0).height / 2);
+    if(!settingUp) {
+        ofNoFill();
+        ofSetColor(255);
+        //    ofDrawRectangle(presets.bounds);
+        ofDrawRectangle(presetsUp.bounds);
+        ofDrawRectangle(presetsDown.bounds);
+        categoryFont.drawString(themes[(themeNum-1)%themes.size()],  presets.bounds.x + presets.bounds.width/2 - categoryFont.getStringBoundingBox(themes[(themeNum-1)%themes.size()], 0, 0).width / 2, presets.bounds.y + presets.bounds.height/2 + categoryFont.getStringBoundingBox("Mute", 0, 0).height / 2);
+    }
+    
+    for(int i = 0; i < NUM_CONTROLLERS; i++) {
+        if(controllers[i].getMode() != SoundController::modes::SETUP) controllers[i].draw();
+    }
+    if(settingUp) {
+        for(int i = 0; i < NUM_CONTROLLERS; i++) {
+            if(controllers[i].getMode() == SoundController::modes::SETUP) controllers[i].draw();
+        }
+    }
     ofPopStyle();
+
 }
 
 //--------------------------------------------------------------
@@ -240,7 +247,7 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
             allMuted = false;
         }
     }
-    if(presetsUp.isInside(touch.x, touch.y)) {
+    if(presetsUp.isInside(touch.x, touch.y) && !settingUp) {
         if(!keyboard->isKeyboardShowing()) {
             int i = 0;
             //        cout<<players.begin()->first<<endl;
@@ -257,7 +264,7 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
             //        }
 
         }
-    } else if(presetsDown.isInside(touch.x, touch.y)) {
+    } else if(presetsDown.isInside(touch.x, touch.y) && !settingUp) {
         if(!keyboard->isKeyboardShowing()) {
             int i = 0;
             //        cout<<players.begin()->first<<endl;
@@ -304,8 +311,12 @@ void ofApp::touchCancelled(ofTouchEventArgs & touch){
 //--------------------------------------------------------------
 void ofApp::lostFocus(){
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
-        controllers[i].saveSoundToXml(&settings);
+        controllers[i].saveToXml(&settings);
     }
+    for(int i = 0; i < 9; i++) {
+        recorderNames.setValue("NAME", recorders[i]->getName(), i);
+    }
+    recorderNames.save(ofxiOSGetDocumentsDirectory() + "recorderNames.xml");
 }
 
 //--------------------------------------------------------------
@@ -326,11 +337,11 @@ void ofApp::deviceOrientationChanged(int newOrientation){
 //--------------------------------------------------------------
 void ofApp::audioIn( float * input, int bufferSize, int nChannels ) {
     for(int i = 0; i < recorders.size(); i++) {
-        recorders[i]->fillRecording(input, bufferSize, nChannels);
+        recorders[i]->audioReceived(input, bufferSize, nChannels);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::audioOut( float * output, int bufferSize, int nChannels ) {
-    mixer->outputMix(output, bufferSize, nChannels);
+    //mixer->outputMix(output, bufferSize, nChannels);
 }

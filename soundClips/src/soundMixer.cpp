@@ -14,16 +14,16 @@ soundMixer::soundMixer() {
 }
 
 void soundMixer::outputMix(float * output, int bufferSize, int nChannels) {
-    numPlayingInputs = 0;
-    for(int i = 0; i < bufferSize; i++) {
-        output[i] = 0;
-    }
-    for(int i = 0; i < recorders.size(); i++) {
-        recorders[i]->outputRecording(output, bufferSize, nChannels);
-        if(recorders[i]->isPlaying()) {
-            numPlayingInputs++;
-        }
-    }
+//    numPlayingInputs = 0;
+//    for(int i = 0; i < bufferSize; i++) {
+//        output[i] = 0;
+//    }
+//    for(int i = 0; i < recorders.size(); i++) {
+//        recorders[i]->outputRecording(output, bufferSize, nChannels);
+//        if(recorders[i]->isPlaying()) {
+//            numPlayingInputs++;
+//        }
+//    }
     //    for(int i = 0; i < players.size(); i++) {
     //        if(players[i]->isPlaying()) {
     //            numPlayingInputs++;
@@ -39,10 +39,10 @@ void soundMixer::outputMix(float * output, int bufferSize, int nChannels) {
     //    }
 }
 
-void soundMixer::addRecorder(soundRecorder* recorder) {
-    recorders.push_back(recorder);
-    numInputs++;
-}
+//void soundMixer::addRecorder(soundRecorder* recorder) {
+//    recorders.push_back(recorder);
+//    numInputs++;
+//}
 
 void soundMixer::addPlayer(ofSoundPlayer* player) {
     players.push_back(player);

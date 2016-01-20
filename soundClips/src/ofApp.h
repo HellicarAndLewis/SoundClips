@@ -3,7 +3,8 @@
 #include "ofxiOS.h"
 #include "ofxiOSKeyboard.h"
 #include "NearablesManager.h"
-#include "soundMixer.h"
+#include "soundRecording.h"
+//#include "soundMixer.h"
 #include "SoundController.h"
 #include "ofxXmlSettings.h"
 
@@ -33,15 +34,14 @@ public:
     
     bool settingUp;
     
-    ofTrueTypeFont numberFont;
-    ofTrueTypeFont listFont;
+    ofTrueTypeFont numberFont, categoryFont, soundFont;
     SoundController controllers[NUM_CONTROLLERS];
-    soundMixer* mixer;
+//    soundMixer* mixer;
     movementManager* manager;
     map<string, map<string, ofSoundPlayer*> > players;
     vector<string> themes;
     int themeNum;
-    vector<soundRecorder*> recorders;
+    vector<soundRecording*> recorders;
     ofImage gear;
     ofImage arrow;
     ofxiOSKeyboard* keyboard;
@@ -51,10 +51,9 @@ public:
     button muteAll;
     button presets, presetsDown, presetsUp;
     
-    ofxXmlSettings settings;
+    ofxXmlSettings settings, recorderNames;
     
     ofColor cols[NUM_CONTROLLERS];
-    string names[NUM_CONTROLLERS];
 };
 
 

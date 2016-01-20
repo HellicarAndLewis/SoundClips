@@ -10,27 +10,26 @@
 #define __soundRecorder__soundMixer__
 
 #include "ofMain.h"
-#include "soundRecorder.h"
 
 class soundMixer {
 private:
     int numInputs, numPlayingInputs;
-    vector<soundRecorder*> recorders;
+//    vector<soundRecorder*> recorders;
     vector<ofSoundPlayer*> players;
 public:
     soundMixer();
     
     //Setters and Getters
-    int getNumRecorders() { return recorders.size(); };
+//    int getNumRecorders() { return recorders.size(); };
     int getNumplayers() { return players.size(); };
-    int getNumInputs() { return players.size() + recorders.size(); };
+    int getNumInputs() { return players.size(); };
     
-    soundRecorder* getSoundRecorder(int i) { return recorders[i]; };
+//    soundRecorder* getSoundRecorder(int i) { return recorders[i]; };
     ofSoundPlayer* getSoundPlayer(int i) { return players[i]; };
     
     //functionality
     void outputMix( float * output, int bufferSize, int nChannels );
-    void addRecorder(soundRecorder* recorder);
+//    void addRecorder(soundRecorder* recorder);
     void addPlayer(ofSoundPlayer* player);
 };
 
