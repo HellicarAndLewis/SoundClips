@@ -88,6 +88,7 @@ void ofApp::setup(){
             players[themeName] = themePlayers;
         }
     }
+    cout<<players["Wild West"].size()<<endl;
     ofSoundStreamSetup(1, 1);
     
     themeNum = 0;
@@ -138,7 +139,9 @@ void ofApp::setup(){
 //            controllers[i].setBeaconName(names[i]);
             controllers[i].setNumber(i+1);
             controllers[i].setNumberFont(&numberFont);
+            cout<<players["Wild West"].size()<<endl;
             controllers[i].setFromXml(&settings);
+            cout<<players["Wild West"].size()<<endl;
             controllers[i].setMovementManager(manager);
             //controllers[i].setPlayer(players["Space"]["Aon"]);
             //controllers[i].setRecorder(recorders[0]);
@@ -156,6 +159,8 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    cout<<players["Forest"].size()<<endl;
+    cout<<players["Wild West"].size()<<endl;
     settingUp = false;
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].update();
@@ -176,6 +181,8 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    cout<<players["Forest"].size()<<endl;
+    cout<<players["Wild West"].size()<<endl;
     ofBackground(0);
     if(!allMuted) {
         map<string, bool>* list = manager->getNearables();
