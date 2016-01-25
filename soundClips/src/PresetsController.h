@@ -31,6 +31,7 @@ private:
     Integrator<float> x, y, width, height;
     ofImage* acceptImg;
     ofImage* cancelImg;
+    map<string, map<string, ofSoundPlayer*> >* allPlayers;
     
 public:
     PresetsController() { presets = NULL; mode = modes::IDLE; };
@@ -42,6 +43,7 @@ public:
     void setAcceptImage(ofImage* img) { acceptImg = img; };
     void setMode(int _mode) { mode = _mode;};
     void setControllers(SoundController* _controllers) {controllers = _controllers;};
+    void setPlayers(map<string, map<string, ofSoundPlayer*> >* _players) {allPlayers = _players;};
     
     void onAccept();
 

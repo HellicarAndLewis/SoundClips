@@ -17,9 +17,7 @@
 @interface nearablesManager : NSObject<ESTNearableManagerDelegate>
 
 @property (nonatomic, strong) ESTNearableManager *manager;
-//@property (nonatomic, strong) NSArray *nearables;
 @property map<string, bool> *beacons;
-//@property (nonatomic, strong)
 
 - (void) setup;
 

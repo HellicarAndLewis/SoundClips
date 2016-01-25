@@ -1,4 +1,4 @@
-//
+  //
 //  SoundController.mm
 //  soundClips
 //
@@ -20,8 +20,8 @@ SoundController::SoundController() {
 }
 
 void SoundController::setPosition(float _x, float _y, float _width, float _height) {
-    x.set(_x);
-    y.set(_y);
+    x.set(_x);//buffer * (1+1) + _width*(1));
+    y.set(_y + ofGetHeight());//ofGetHeight()/8 + buffer * (1+1) + _width*(1));
     width.set(_width);
     height.set(_height);
     x.attraction = 0.1;
@@ -38,6 +38,10 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     fullY = ofGetHeight() / 8 + buffer;
     fullWidth = ofGetWidth() - buffer*2;
     fullHeight = fullWidth;
+    
+    x.target(_x);
+    y.target(_y);
+//    , upperBuffer + buffer * (2+1) + width*(23)
     
     ofRectangle numberBoundingBox = numberFont->getStringBoundingBox("0" + ofToString(number), 0, 0);
     int CategoryX = 2*buffer;
@@ -76,7 +80,7 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     edit.savedBounds = ofRectangle(fullX + fullWidth - largeEditImage->getWidth() - buffer, fullY + buffer, largeEditImage->getWidth(), largeEditImage->getHeight());
     
     record.name = "Record";
-    record.bounds = ofRectangle(ofGetWidth() - buffer*2 - 50 - width.val/2, buffer*2, 100, 100);
+    record.bounds = ofRectangle(ofGetWidth() - buffer*2 - 50 - width.val/2, buffer, 100, 100);
     
     changeEstimote.name = "changeEstimote";
     changeEstimote.bounds= ofRectangle(20 + (ofGetWidth() - 20*4) / 6 - 50, ofGetHeight()/16 - 50, 100, 100);
@@ -92,6 +96,7 @@ void SoundController::setPlayer(ofSoundPlayer* _input) {
             if(soundIt->second == player) {
                 soundTitle = soundIt->first;
                 category = it->first;
+                break;
             }
         }
     }
@@ -213,7 +218,7 @@ void SoundController::draw() {
     ofDrawRectRounded(x.val, y.val, width.val, height.val, 10);
     ofSetColor(255);
     numberFont->drawString("0" + ofToString(number), x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + 10);
-    if(mode != modes::SETUP && width.val - 5 <= smallWidth) {
+    if(mode != modes::SETUP && ofDist(x.val, y.val, smallX, smallY) < 2) {
         ofSetColor(0);
         soundFont->drawString(soundName, x.val + buffer, y.val + height.val - buffer);
         ofSetColor(255);

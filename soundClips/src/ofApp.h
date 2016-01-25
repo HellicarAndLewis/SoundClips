@@ -23,7 +23,8 @@ public:
     void touchUp(ofTouchEventArgs & touch);
     void touchDoubleTap(ofTouchEventArgs & touch);
     void touchCancelled(ofTouchEventArgs & touch);
-    
+    void load();
+
     void popupDismissed();
     void popupAccepted();
     
@@ -44,12 +45,18 @@ public:
     vector<string> themes;
     int themeNum;
     vector<soundRecording*> recorders;
-    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList;
+    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList, splashScreen, background;
     ofxiOSKeyboard* keyboard;
     
     PresetsController presetsController;
     
+    ofSoundStream stream;
+    
     UILongPressGestureRecognizer* lpgr;
+    
+    map<string, bool> beaconsLastFrame;
+    
+    bool loaded, splashDrawn;
         
     bool allMuted;
     

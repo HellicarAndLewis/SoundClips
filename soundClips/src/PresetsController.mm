@@ -175,14 +175,13 @@ void PresetsController::onAccept() {
         }
     } else {
         string category = (*presets)[presetNum];
-        map<string, map<string, ofSoundPlayer*> >* players = controllers[0].getPlayers();
-        map<string, ofSoundPlayer*>::iterator it = players->begin()->second.begin();
+        map<string, ofSoundPlayer*> categoryPlayers = (*allPlayers)[category];
+        auto it = categoryPlayers.begin();
         for(int i = 0; i < 9; i++) {
-            ofSoundPlayer* player = (*players)[category][it->first];
+            ofSoundPlayer* player = it->second;
             controllers[i].setPlayer(player);
             it++;
         }
-    }
-
+    }  
 }
 
