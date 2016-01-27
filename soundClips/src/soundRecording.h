@@ -4,6 +4,8 @@
 #include "ofMain.h"
 
 #include "WavFile.h"
+#import <AVFoundation/AVFoundation.h>
+
 
 class soundRecording {
     

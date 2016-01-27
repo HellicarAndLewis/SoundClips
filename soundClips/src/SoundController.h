@@ -12,6 +12,9 @@
 #define NUM_CATEGORY_BUTTONS 9
 #define NUM_SOUND_BUTTONS 9
 
+#define WIDTH ofGetWidth()
+#define HEIGHT ofGetHeight()
+
 
 //#include "ofMain.h"
 #include "ofxiOS.h"
@@ -34,7 +37,7 @@ struct button {
     }
 };
 
-class SoundController {
+class SoundController : public button {
 private:
     ofSoundPlayer* player;
     soundRecording* recorder;
@@ -60,6 +63,7 @@ private:
     button soundButtons[NUM_SOUND_BUTTONS];
     button edit;
     button record;
+    button mute;
     button changeEstimote;
     
     movementManager* estimotes;
@@ -68,15 +72,18 @@ private:
     ofImage* largeEditImage;
     ofImage* heirarchyArrowMain;
     ofImage* heirarchyArrowList;
+    ofImage* inactiveImage;
+    ofImage* muteImage;
     
     
     bool* allMuted;
+    bool* settingUp;
     
     ofColor col;
-    int mode;
+    int mode, lastMode;
     float smallX, smallY, smallHeight, smallWidth;
     float fullX, fullY, fullHeight, fullWidth;
-    float buffer = 14.5;
+    float buffer;
     
 public:
     enum modes {
@@ -104,15 +111,20 @@ public:
     void setLargeEditImage(ofImage* _img) {largeEditImage = _img;};
     void setHeirarchyArrowMain(ofImage* _img) {heirarchyArrowMain = _img;};
     void setHeirarchyArrowList(ofImage* _img) {heirarchyArrowList = _img;};
+    void setInactiveImage(ofImage* _img) {inactiveImage = _img;};
+    void setMuteImage(ofImage* _img) {muteImage = _img;};
 
     void setKeyboard(ofxiOSKeyboard* _keyboard) {keyboard = _keyboard;};
     void setAllMuted(bool* _allMuted) {allMuted = _allMuted;};
     void setCategoryName(string _category) {categoryName = _category;};
     void setSoundName(string _sound) {soundName = _sound;};
     void setMovementManager(movementManager* _manager) {estimotes = _manager;};
+    void setSettingUpVariable(bool* _settingUp) {settingUp = _settingUp;};
     
     void setCol(ofColor _col) {col = _col;};
     void setMode(int _mode) {mode = _mode;};
+    
+    void setIsPlayingRecording(bool isPlayingRecording) { playingRecording = isPlayingRecording;};
     
     //Getters
     ofSoundPlayer* getPlayer() {return player;};
@@ -127,6 +139,7 @@ public:
     void onTouch(ofTouchEventArgs & touch);
     void onTouchUp(ofTouchEventArgs & touch);
     void onTouchMoved(ofTouchEventArgs & touch);
+    void onDoubleTouch(ofTouchEventArgs & touch);
     void drawLists();
     void setFromXml(ofxXmlSettings* settings);
     void saveToXml(ofxXmlSettings* settings);

@@ -7,6 +7,7 @@
 #include "SoundController.h"
 #include "ofxXmlSettings.h"
 #include "PresetsController.h"
+#import <AVFoundation/AVFoundation.h>
 
 #define NUM_CONTROLLERS 9
 
@@ -33,25 +34,24 @@ public:
     void gotMemoryWarning();
     void deviceOrientationChanged(int newOrientation);
     
-//    void audioOut( float * output, int bufferSize, int nChannels );
     void audioIn( float * input, int bufferSize, int nChannels );
     
-    bool settingUp;
+    bool settingUp, wasSettingUpLastFrame;
     
-    ofTrueTypeFont numberFontLarge, numberFontSmall, categoryFont, soundFont;
+    ofTrueTypeFont numberFontLarge, numberFontSmall, categoryFont, soundFont, presetsTitleFont;
     SoundController controllers[NUM_CONTROLLERS];
     movementManager* manager;
     map<string, map<string, ofSoundPlayer*> > players;
     vector<string> themes;
     int themeNum;
     vector<soundRecording*> recorders;
-    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList, splashScreen, background;
+    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList, splashScreen, background, crossImage, muteImage;
     ofxiOSKeyboard* keyboard;
-    
+        
     PresetsController presetsController;
     
     ofSoundStream stream;
-    
+        
     UILongPressGestureRecognizer* lpgr;
     
     map<string, bool> beaconsLastFrame;

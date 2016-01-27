@@ -14,6 +14,9 @@
 #include "ofxIntegrator.h"
 #define NUM_PRESETS 9
 
+#define WIDTH ofGetWidth()
+#define HEIGHT ofGetHeight()
+
 class PresetsController {
 private:
     vector<string>* presets;
@@ -26,7 +29,7 @@ private:
     float smallX, smallY, smallHeight, smallWidth;
     float fullX, fullY, fullHeight, fullWidth;
     ofColor col;
-    int buffer = 14.5;
+    int buffer;
     button presetButtons[NUM_PRESETS];
     Integrator<float> x, y, width, height;
     ofImage* acceptImg;

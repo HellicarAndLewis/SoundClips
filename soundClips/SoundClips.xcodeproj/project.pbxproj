@@ -13,7 +13,7 @@
 		1A1D65501C524B2B00A6D865 /* MyViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A1D654C1C524B2B00A6D865 /* MyViewController~ipad.xib */; };
 		1A5255501C4537AB00F4635C /* EstimoteSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A52554F1C4537AB00F4635C /* EstimoteSDK.framework */; };
 		1A5255541C45388500F4635C /* NearablesManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A5255531C45388500F4635C /* NearablesManager.mm */; };
-		1AAF38731C4EAD0E00D4BC09 /* soundRecording.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF38701C4EAD0E00D4BC09 /* soundRecording.cpp */; };
+		1AAF38731C4EAD0E00D4BC09 /* soundRecording.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF38701C4EAD0E00D4BC09 /* soundRecording.mm */; };
 		1AD597EC1C4E8CAE00C44CEB /* SoundController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AD597EA1C4E8CAE00C44CEB /* SoundController.mm */; };
 		1AEC22BB1C50FAB400104F06 /* PresetsController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AEC22B91C50FAB400104F06 /* PresetsController.mm */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
@@ -81,7 +81,7 @@
 		1A52554F1C4537AB00F4635C /* EstimoteSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = EstimoteSDK.framework; sourceTree = "<group>"; };
 		1A5255531C45388500F4635C /* NearablesManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NearablesManager.mm; sourceTree = "<group>"; };
 		1A5255561C4539E700F4635C /* NearablesManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NearablesManager.h; sourceTree = "<group>"; };
-		1AAF38701C4EAD0E00D4BC09 /* soundRecording.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundRecording.cpp; sourceTree = "<group>"; };
+		1AAF38701C4EAD0E00D4BC09 /* soundRecording.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = soundRecording.mm; sourceTree = "<group>"; };
 		1AAF38711C4EAD0E00D4BC09 /* soundRecording.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundRecording.h; sourceTree = "<group>"; };
 		1AAF38721C4EAD0E00D4BC09 /* WavFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WavFile.h; sourceTree = "<group>"; };
 		1AD597D31C4E8C5000C44CEB /* ofxIntegrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxIntegrator.h; sourceTree = "<group>"; };
@@ -362,7 +362,7 @@
 				1A5255561C4539E700F4635C /* NearablesManager.h */,
 				1AD597EA1C4E8CAE00C44CEB /* SoundController.mm */,
 				1AD597EB1C4E8CAE00C44CEB /* SoundController.h */,
-				1AAF38701C4EAD0E00D4BC09 /* soundRecording.cpp */,
+				1AAF38701C4EAD0E00D4BC09 /* soundRecording.mm */,
 				1AAF38711C4EAD0E00D4BC09 /* soundRecording.h */,
 				1AAF38721C4EAD0E00D4BC09 /* WavFile.h */,
 				1AEC22B91C50FAB400104F06 /* PresetsController.mm */,
@@ -496,7 +496,7 @@
 				1A5255541C45388500F4635C /* NearablesManager.mm in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
-				1AAF38731C4EAD0E00D4BC09 /* soundRecording.cpp in Sources */,
+				1AAF38731C4EAD0E00D4BC09 /* soundRecording.mm in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1AEC22BB1C50FAB400104F06 /* PresetsController.mm in Sources */,

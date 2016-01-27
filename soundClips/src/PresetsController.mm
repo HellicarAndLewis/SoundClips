@@ -17,8 +17,8 @@ void PresetsController::draw() {
     ofPushStyle();
     ofSetColor(col.r, col.g, col.b);
     ofFill();
-    ofDrawRectRounded(x.val, y.val, width.val, height.val, 10);
-    if(mode == modes::IDLE) {
+    ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
+    if(mode == modes::IDLE || width.val - 5 <= smallWidth) {
         ofSetColor(255);
         font->drawString("Presets", x.val + width.val/2 - font->getStringBoundingBox("Presets", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("Presets", 0, 0).height/2);
         ofPopStyle();
@@ -28,7 +28,7 @@ void PresetsController::draw() {
             ofSetColor(255);
             titleFont->drawString("PRESETS", x.val + buffer, y.val + titleFont->getStringBoundingBox("PRESETS", 0, 0).height + 10);
             ofSetColor(255);
-            ofDrawRectangle(x.val + buffer, y.val + 2* buffer + titleFont->getStringBoundingBox("0", 0, 0).getHeight(), width.val - buffer*2, 3);
+            ofDrawRectangle(x.val + buffer, y.val + 3 * buffer + titleFont->getStringBoundingBox("0", 0, 0).getHeight(), width.val - buffer*2, 3);
             drawList();
             ofSetColor(255);
             acceptImg->draw(accept.bounds);
@@ -64,11 +64,11 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     smallWidth = _width;
     smallHeight = _height;
     
-    buffer = 10;
+    buffer = HEIGHT*0.01;
     
     fullX = buffer;
-    fullY = ofGetHeight() / 8 + buffer;
-    fullWidth = ofGetWidth() - buffer*2;
+    fullY = HEIGHT / 8 + buffer;
+    fullWidth = WIDTH - buffer*2;
     fullHeight = fullWidth;
     
     ofRectangle titleBoundingBox = titleFont->getStringBoundingBox("Presets", 0, 0);
@@ -140,7 +140,7 @@ void PresetsController::drawList() {
         ofFill();
         if(presetNum == i) {
             ofSetColor(255, 255, 255, 51);
-            ofDrawRectRounded(presetButtons[i].bounds, 10);
+            ofDrawRectRounded(presetButtons[i].bounds, 20);
         }
         ofPopStyle();
         ofPushStyle();
@@ -172,6 +172,7 @@ void PresetsController::onAccept() {
         vector<soundRecording*>*  recorders = controllers[0].getRecorders();
         for(int i = 0; i < 9; i++) {
             controllers[i].setRecorder((*recorders)[i]);
+            controllers[i].setIsPlayingRecording(true);
         }
     } else {
         string category = (*presets)[presetNum];

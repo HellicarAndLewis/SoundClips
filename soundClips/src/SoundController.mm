@@ -17,11 +17,14 @@ SoundController::SoundController() {
     recorder = NULL;
     player = NULL;
     newBeacon = "";
+    lastMode = IDLE;
 }
 
 void SoundController::setPosition(float _x, float _y, float _width, float _height) {
+    buffer = HEIGHT*0.01;
+
     x.set(_x);//buffer * (1+1) + _width*(1));
-    y.set(_y + ofGetHeight());//ofGetHeight()/8 + buffer * (1+1) + _width*(1));
+    y.set(_y + HEIGHT);//HEIGHT/16 + buffer * (1+1) + _width*(1));
     width.set(_width);
     height.set(_height);
     x.attraction = 0.1;
@@ -35,9 +38,10 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     smallHeight = _height;
         
     fullX = buffer;
-    fullY = ofGetHeight() / 8 + buffer;
-    fullWidth = ofGetWidth() - buffer*2;
+    fullY = HEIGHT / 8 + buffer;
+    fullWidth = WIDTH - buffer*2;
     fullHeight = fullWidth;
+    
     
     x.target(_x);
     y.target(_y);
@@ -75,15 +79,21 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
         soundButtons[i].name = soundNames[i];
     }
     
+    float topButtonHeight = HEIGHT*0.1;
+    
     edit.name = "Edit";
-    edit.bounds = ofRectangle(smallX + smallWidth - smallEditImage->getWidth() - buffer, smallY + buffer, smallEditImage->getWidth(), smallEditImage->getHeight());
-    edit.savedBounds = ofRectangle(fullX + fullWidth - largeEditImage->getWidth() - buffer, fullY + buffer, largeEditImage->getWidth(), largeEditImage->getHeight());
+    edit.bounds = ofRectangle(smallX + smallWidth - HEIGHT*0.03 - buffer, smallY + buffer, HEIGHT*0.03, HEIGHT*0.03);
+    edit.savedBounds = ofRectangle(fullX + fullWidth - HEIGHT*0.06 - buffer, fullY + buffer, HEIGHT*0.06, HEIGHT*0.06);
+    
+    mute.name = "Mute";
+    mute.bounds = ofRectangle(smallX + smallWidth - HEIGHT*0.03 - buffer, smallY + smallHeight - HEIGHT*0.03 - buffer, HEIGHT*0.03, HEIGHT*0.03);
     
     record.name = "Record";
-    record.bounds = ofRectangle(ofGetWidth() - buffer*2 - 50 - width.val/2, buffer, 100, 100);
+    record.bounds = ofRectangle( buffer*3 + _width*2, buffer, _width, topButtonHeight);
     
     changeEstimote.name = "changeEstimote";
-    changeEstimote.bounds= ofRectangle(20 + (ofGetWidth() - 20*4) / 6 - 50, ofGetHeight()/16 - 50, 100, 100);
+    changeEstimote.bounds = ofRectangle(buffer, buffer, _width, topButtonHeight);
+    //changeEstimote.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 - smallWidth/2, HEIGHT/16 - 100, smallWidth, 200);
 }
 
 void SoundController::setPlayer(ofSoundPlayer* _input) {
@@ -190,58 +200,68 @@ void SoundController::update() {
             y.target(fullY);
         }
     }
+    lastMode = mode;
 }
 
 void SoundController::draw() {
     ofPushStyle();
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
-        ofSetColor(255);
-        ofDrawRectRounded(changeEstimote.bounds, 10);
+        if(estimotes->getNearables()->size()) {
+            ofSetColor(255);
+            ofDrawRectRounded(changeEstimote.bounds, 20);
+        }
     }
     if(mode == modes::SETUP && width.val + 5 >= fullWidth && categoryName == "Recordings") {
         ofPushStyle();
         ofSetColor(255, 0, 0);
         if(currentlyRecording) {
-            ofSetLineWidth(5);
+            ofSetColor(0);
+            ofDrawRectRounded(record.bounds, 20);
+            ofSetColor(255, 0, 0);
+            ofSetLineWidth(10);
             ofNoFill();
         }
         else {
             ofFill();
         }
-        ofDrawRectRounded(record.bounds, 10);
+        ofDrawRectRounded(record.bounds, 20);
         ofSetColor(255);
         catFont->drawString("Rec", record.bounds.x + record.bounds.width/2 - catFont->getStringBoundingBox("Rec", 0, 0).width / 2, record.bounds.y + record.bounds.height/2 + catFont->getStringBoundingBox("Rec", 0, 0).height / 2);
         ofPopStyle();
     }
-    ofSetColor(col.r, col.g, col.b);
+    if(mode == INACTIVE) {
+        ofSetColor(col.r, col.g, col.b, 127);
+    }
+    else ofSetColor(col.r, col.g, col.b, 255);
     ofFill();
-    ofDrawRectRounded(x.val, y.val, width.val, height.val, 10);
+    ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
     ofSetColor(255);
     numberFont->drawString("0" + ofToString(number), x.val + buffer, y.val + numberFont->getStringBoundingBox("0", 0, 0).height + 10);
     if(mode != modes::SETUP && ofDist(x.val, y.val, smallX, smallY) < 2) {
         ofSetColor(0);
         soundFont->drawString(soundName, x.val + buffer, y.val + height.val - buffer);
         ofSetColor(255);
-        catFont->drawString(categoryName,  x.val + buffer, y.val + height.val - soundFont->getStringBoundingBox("d", 0, 0).getHeight() - buffer - 8);
-        heirarchyArrowMain->draw(x.val + buffer + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth() + 8, y.val + height.val - soundFont->getStringBoundingBox("d", 0, 0).getHeight() - catFont->getStringBoundingBox("d", 0, 0).getHeight() - buffer - 8 + 5);
+        catFont->drawString(categoryName,  x.val + buffer, y.val + height.val - soundFont->getStringBoundingBox("d", 0, 0).getHeight() - buffer*2);
+        heirarchyArrowMain->draw(x.val + buffer + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth() + buffer, y.val + height.val - soundFont->getStringBoundingBox("d", 0, 0).getHeight() - catFont->getStringBoundingBox("d", 0, 0).getHeight() - buffer*2 + buffer/2, 0.01*WIDTH, 0.015*HEIGHT);
         smallEditImage->draw(edit.bounds);
+        muteImage->draw(mute.bounds);
     }
     ofPopStyle();
     ofPushStyle();
     if(mode == modes::PLAYING) {
         ofFill();
         if(categoryName != "Recordings") {
-            ofDrawRectRounded(x.val + buffer, y.val + buffer + numberFont->getStringBoundingBox("0", 0, 0).height + buffer, ofMap(player->getPosition(), 0, 1.0, 0, width.val - buffer*2), 3, 10);
+            ofDrawRectRounded(x.val + buffer, y.val + buffer + numberFont->getStringBoundingBox("0", 0, 0).height + buffer, ofMap(player->getPosition(), 0, 1.0, 0, width.val - buffer*2), 3, buffer);
         } else {
-            ofDrawRectRounded(x.val + buffer, y.val + buffer + numberFont->getStringBoundingBox("0", 0, 0).height + buffer, ofMap(recorder->getPlayer()->getPosition(), 0, 1.0, 0, width.val - buffer*2), 3, 10);
+            ofDrawRectRounded(x.val + buffer, y.val + buffer + numberFont->getStringBoundingBox("0", 0, 0).height + buffer, ofMap(recorder->getPlayer()->getPosition(), 0, 1.0, 0, width.val - buffer*2), 3, buffer);
         }
     }
     ofPopStyle();
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
         catFont->drawString(categoryName,  x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width , y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer);
-        heirarchyArrowMain->draw(x.val + buffer*2 + numberFont->getStringBoundingBox("22", 0, 0).width + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth() + 8, y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer - catFont->getStringBoundingBox("d", 0, 0).getHeight() + 5);
+        heirarchyArrowMain->draw(x.val + buffer*2 + numberFont->getStringBoundingBox("22", 0, 0).width + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth() + buffer, y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer - catFont->getStringBoundingBox("d", 0, 0).getHeight() + buffer/2, 0.01*WIDTH, 0.015*HEIGHT);
         ofSetColor(0);
-        soundFont->drawString(soundName, x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width, y.val + catFont->getStringBoundingBox("d", 0, 0).height + soundFont->getStringBoundingBox("d", 0, 0).height + 8 + buffer);
+        soundFont->drawString(soundName, x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width, y.val + catFont->getStringBoundingBox("d", 0, 0).height + soundFont->getStringBoundingBox("d", 0, 0).height + buffer + buffer);
         ofSetColor(255);
         ofDrawRectangle(x.val + buffer, y.val + 2* buffer + numberFont->getStringBoundingBox("0", 0, 0).getHeight(), width.val - buffer*2, 3);
         if(!changingEstimote) {
@@ -252,11 +272,17 @@ void SoundController::draw() {
             drawEstimoteSetup();
         }
     }
+    if(mode == INACTIVE) {
+        ofPushStyle();
+        ofSetColor(col.r, col.g, col.b, 190);
+        inactiveImage->draw(x.val, y.val, width.val, height.val);
+        ofPopStyle();
+    }
 }
 
 void SoundController::onTouch(ofTouchEventArgs & touch) {
-    if(mode == modes::IDLE || mode == modes::PLAYING) {
-        if(isInside(touch.x, touch.y, x.val, y.val, width.val, height.val) && !edit.isInside(touch.x, touch.y)) {
+    if((mode == modes::IDLE || mode == modes::PLAYING) && lastMode != INACTIVE) {
+        if(isInside(touch.x, touch.y, x.val, y.val, width.val, height.val) && !edit.isInside(touch.x, touch.y) && !mute.isInside(touch.x, touch.y)) {
             stop();
             play();
         }else if(edit.isInside(touch.x, touch.y)) {
@@ -265,7 +291,14 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
             y.target(fullY);
             width.target(fullWidth);
             height.target(fullHeight);
-            edit.bounds = ofRectangle(fullX + fullWidth - largeEditImage->getWidth() - buffer, fullY + buffer, largeEditImage->getWidth(), largeEditImage->getHeight());
+            edit.bounds = ofRectangle(fullX + fullWidth - HEIGHT*0.06 - buffer, fullY + buffer, HEIGHT*0.06, HEIGHT*0.06);
+            if(playingRecording) {
+                recorder->stop();
+            } else {
+                player->stop();
+            }
+        } else if(mute.isInside(touch.x, touch.y)) {
+            onDoubleTouch(touch);
         }
     } else if(mode == modes::SETUP) {
         if(!keyboard->isKeyboardShowing() && !changingEstimote) {
@@ -312,7 +345,7 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
                 y.target(smallY);
                 width.target(smallWidth);
                 height.target(smallHeight);
-                edit.bounds = ofRectangle(smallX + smallWidth - smallEditImage->getWidth() - buffer, smallY + buffer, smallEditImage->getWidth(), smallEditImage->getHeight());
+                edit.bounds = ofRectangle(smallX + smallWidth - WIDTH*0.041 - buffer, smallY + buffer, HEIGHT*0.03, HEIGHT*0.03);
                 if(categoryName == "Recordings") {
                     playingRecording = true;
                     for(int i = 0; i < allRecorders->size(); i++) {
@@ -355,6 +388,10 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
                     }
                 }
             }
+        }
+    } else if(mode == INACTIVE && !(*settingUp)) {
+        if(mute.isInside(touch.x, touch.y)) {
+            onDoubleTouch(touch);
         }
     }
 }
@@ -422,6 +459,19 @@ void SoundController::onTouchMoved(ofTouchEventArgs & touch) {
     }
 }
 
+void SoundController::onDoubleTouch(ofTouchEventArgs & touch) {
+    if(isInside(touch.x, touch.y, x.val, y.val, width.val, height.val)) {
+        if(mode == PLAYING || mode == IDLE) {
+            if(!playingRecording) player->stop();
+            else recorder->stop();
+            mode = INACTIVE;
+        } else if(mode == INACTIVE) {
+            mode = IDLE;
+        }
+    }
+}
+
+
 void SoundController::drawLists() {
     ofPushStyle();
     ofNoFill();
@@ -432,9 +482,9 @@ void SoundController::drawLists() {
             ofPushStyle();
             ofSetColor(255, 255, 255, 51);
             ofFill();
-            ofDrawRectRounded(categoryButtons[i].bounds, 10);
+            ofDrawRectRounded(categoryButtons[i].bounds, 20);
             ofSetColor(255);
-            heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - heirarchyArrowList->getWidth() - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - heirarchyArrowList->getHeight()/2);
+            heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - buffer*2, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.016*WIDTH, 0.02*HEIGHT*1.5);
             ofPopStyle();
         }
         catFont->drawString(it->first, categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
@@ -444,9 +494,9 @@ void SoundController::drawLists() {
         ofPushStyle();
         ofSetColor(255, 255, 255, 51);
         ofFill();
-        ofDrawRectRounded(categoryButtons[i].bounds, 10);
+        ofDrawRectRounded(categoryButtons[i].bounds, 20);
         ofSetColor(255);
-        heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - heirarchyArrowList->getWidth() - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - heirarchyArrowList->getHeight()/2);
+        heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - heirarchyArrowList->getWidth() - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.016*WIDTH, 0.02*HEIGHT*1.5);
         ofPopStyle();
     }
     catFont->drawString("Recordings", categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
@@ -457,7 +507,7 @@ void SoundController::drawLists() {
                 ofPushStyle();
                 ofSetColor(255, 255, 255, 51);
                 ofFill();
-                ofDrawRectRounded(soundButtons[i].bounds, 10);
+                ofDrawRectRounded(soundButtons[i].bounds, 20);
                 ofPopStyle();
             }
             soundFont->drawString(it->first, soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
@@ -469,7 +519,7 @@ void SoundController::drawLists() {
                 ofPushStyle();
                 ofSetColor(255, 255, 255, 51);
                 ofFill();
-                ofDrawRectRounded(soundButtons[i].bounds, 10);
+                ofDrawRectRounded(soundButtons[i].bounds, 20);
                 ofPopStyle();
             }
             soundFont->drawString((*allRecorders)[i]->getName(), soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
@@ -481,7 +531,7 @@ void SoundController::drawLists() {
         if(soundButtons[i].active) {
             ofSetColor(255, 0, 0);
             ofFill();
-            ofDrawRectRounded(soundButtons[i].bounds, 10);
+            ofDrawRectRounded(soundButtons[i].bounds, 20);
             ofSetColor(255);
             soundFont->drawString("Recording...", soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
         }
@@ -497,7 +547,7 @@ void SoundController::drawEstimoteSetup() {
     ofSetColor(0);
     int x, y;
     x = fullX + fullWidth/2;
-    y = fullY + buffer*4 + numberFont->getStringBoundingBox("22", 0, 0).height;
+    y = fullY + buffer*8 + numberFont->getStringBoundingBox("22", 0, 0).height;
     string message = "Setting Up A New Beacon...";
     catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
     

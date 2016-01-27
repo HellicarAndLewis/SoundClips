@@ -81,6 +81,8 @@ void soundRecording::startRecording(){
         wavWriter.open(realfile, WAVFILE_WRITE);
         
         bIsRecording = true;
+        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayAndRecord error: nil];
+        
     }
     
 }
@@ -94,6 +96,8 @@ void soundRecording::stopRecording(){
         bIsRecording = false;
         
         loadSample();
+        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil];
+
     }
 }
 //--------------------------------------------------------------

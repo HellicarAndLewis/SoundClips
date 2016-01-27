@@ -8,9 +8,12 @@ void ofApp::setup(){
     
     loaded = false;
     splashDrawn = false;
+    wasSettingUpLastFrame = false;
     ofSetOrientation(OF_ORIENTATION_DEFAULT);
     
     splashScreen.load("Default@2x~ipad.png");
+    cout<<ofGetHeight()<<endl;
+
 }
 
 //--------------------------------------------------------------
@@ -31,31 +34,30 @@ void ofApp::update(){
                 if(controllers[i].getMode() != SoundController::modes::SETUP) controllers[i].setMode(SoundController::modes::INACTIVE);
             }
             if(presetsController.getMode() != PresetsController::modes::SETUP) presetsController.setMode(PresetsController::modes::INACTIVE);
-        } else {
+        } else if(wasSettingUpLastFrame) {
             for(int i = 0; i < NUM_CONTROLLERS; i++) {
                 if(controllers[i].getMode() == SoundController::modes::INACTIVE) controllers[i].setMode(SoundController::modes::IDLE);
             }
             if(presetsController.getMode() == PresetsController::modes::INACTIVE) presetsController.setMode(PresetsController::modes::IDLE);
-
         }
         presetsController.update();
     } else if(splashDrawn) {
         load();
         loaded = true;
     }
+    wasSettingUpLastFrame = settingUp;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    ofSetOrientation(OF_ORIENTATION_DEFAULT);
     if(!loaded) {
         splashScreen.load("Default@2x~ipad.png");
         splashScreen.draw(0, 0, WIDTH, HEIGHT);
         splashDrawn = true;
     } else {
         background.draw(0, 0, WIDTH, HEIGHT);
-        //ofBackground(211, 238, 246);
         ofEnableSmoothing();
-//        ofBackground(0);
         if(!allMuted) {
             map<string, bool>* list = manager->getNearables();
             for(auto nearable = list->begin(); nearable != list->end(); nearable++) {
@@ -75,12 +77,12 @@ void ofApp::draw(){
         ofPushStyle();
         if(allMuted) {
             ofSetColor(127);
-            ofDrawRectRounded(muteAll.bounds, 10);
+            ofDrawRectRounded(muteAll.bounds, 20);
             ofSetColor(255);
             categoryFont.drawString("Unmute", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("Unmute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("Unmute", 0, 0).height / 2);
         } else {
             ofSetColor(127);
-            ofDrawRectRounded(muteAll.bounds, 10);
+            ofDrawRectRounded(muteAll.bounds, 20);
             ofSetColor(255);
             categoryFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("Mute", 0, 0).height / 2);
         }
@@ -107,13 +109,15 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::touchDown(ofTouchEventArgs & touch){
-    //    if (touch.numTouches == 1) {
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].onTouch(touch);
     }
-    if(muteAll.isInside(touch.x, touch.y)) {
+    if(muteAll.isInside(touch.x, touch.y) && !settingUp) {
         if(!allMuted) {
             allMuted = true;
+            for(int i = 0; i < NUM_CONTROLLERS; i++) {
+                controllers[i].setMode(SoundController::modes::INACTIVE);
+            }
             for(auto it = players.begin(); it != players.end(); it++) {
                 for(auto soundIt = it->second.begin(); soundIt != it->second.end(); soundIt++) {
                     soundIt->second->stop();
@@ -123,6 +127,9 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
                 recorders[i]->stop();
             }
         } else {
+            for(int i = 0; i < NUM_CONTROLLERS; i++) {
+                if(controllers[i].getMode() == SoundController::modes::INACTIVE) controllers[i].setMode(SoundController::modes::IDLE);
+            }
             allMuted = false;
         }
     }
@@ -159,7 +166,7 @@ void ofApp::lostFocus(){
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].saveToXml(&settings);
     }
-    for(int i = 0; i < 9; i++) {
+    for(int i = 0; i < recorders.size(); i++) {
         recorderNames.setValue("NAME", recorders[i]->getName(), i);
     }
     recorderNames.save(ofxiOSGetDocumentsDirectory() + "recorderNames.xml");
@@ -187,14 +194,8 @@ void ofApp::audioIn( float * input, int bufferSize, int nChannels ) {
     }
 }
 
-////--------------------------------------------------------------
-//void ofApp::audioOut( float * output, int bufferSize, int nChannels ) {
-//    //mixer->outputMix(output, bufferSize, nChannels);
-//}
-
 //--------------------------------------------------------------
 void ofApp::popupDismissed() {
-    cout<<"dismissed"<<endl;
 }
 
 //--------------------------------------------------------------
@@ -213,23 +214,6 @@ void ofApp::load() {
     
     //Set the variable to tell if any controllers are in setup mode
     settingUp = false;
-    
-    //Setup the sound Mixer
-    //    mixer = new soundMixer();
-    
-    //mute All button
-    muteAll.name = "Mute";
-    muteAll.bounds = ofRectangle(WIDTH/2 - 50, HEIGHT/16 - 50, 100, 100);
-    allMuted = false;
-    
-    //Presets cycle button
-    
-    //Settings which sound is connected to which beacons
-    //    for(int i = 0; i < NUM_CONTROLLERS; i++) {
-    //        string number = "0" + ofToString(i+1);
-    //        settings.setValue("settings:"+number+":Category", "Jungle");
-    //        settings.setValue("settings:"+number+":Sound", "Bon");
-    //    }
     
     string message = "";
     
@@ -280,17 +264,19 @@ void ofApp::load() {
         }
     }
     themes.push_back("Recordings");
-    ofSoundStreamSetup(0, 1);
-//    ofSoundStreamClose();
-//    stream.stop();
-//    stream.close();
     
+    ofSoundStreamSetup(0, 1);
+    //stream.setup(0, 1, 44100, 512, 4);
+    
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil];
+
     themeNum = 0;
     
-    numberFontLarge.load("fonts/ITCAvantGardePro-Demi.otf", 146);
-    numberFontSmall.load("fonts/ITCAvantGardePro-Demi.otf", 113);
-    categoryFont.load("fonts/Geo_Oblique.otf", 24);
-    soundFont.load("fonts/Geo.otf", 20);
+    numberFontLarge.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.143);
+    numberFontSmall.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.110);
+    categoryFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.023);
+    soundFont.load("fonts/Geo.otf", HEIGHT*0.020);
+    presetsTitleFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.110);
     
     cols[0] = ofColor(126, 166, 187);
     cols[1] = ofColor(188, 187, 22);
@@ -307,6 +293,8 @@ void ofApp::load() {
     heirarchyArrowMain.load("images/Heirachy_Arrow_Small.png");
     heirarchyArrowList.load("images/Selector_Arrow.png");
     background.load("images/background.png");
+    crossImage.load("images/cross.png");
+    muteImage.load("images/cross2.png");
     
     keyboard = new ofxiOSKeyboard(0,0,0,0);
     keyboard->setMaxChars(11);
@@ -324,7 +312,7 @@ void ofApp::load() {
         recorders.push_back(recorder);
     }
     
-    int buffer = 20;
+    int buffer = HEIGHT*0.01;
     int upperBuffer = HEIGHT / 8;
     float width = (WIDTH - buffer*4) / 3;
     float height = width;
@@ -347,17 +335,26 @@ void ofApp::load() {
             controllers[i].setHeirarchyArrowList(&heirarchyArrowList);
             controllers[i].setKeyboard(keyboard);
             controllers[i].setAllMuted(&allMuted);
-            controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + width*(y%3), width, height);
+            controllers[i].setInactiveImage(&crossImage);
+            controllers[i].setSettingUpVariable(&settingUp);
+            controllers[i].setMuteImage(&muteImage);
+            controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + height*(y%3), width, height);
         }
     }
+        
+    //mute All button
+    muteAll.name = "Mute";
+    float topButtonHeight = 0.1 * HEIGHT;
+    muteAll.bounds = ofRectangle(buffer*2 + width, buffer, width, topButtonHeight);
+    allMuted = false;
     
     presetsController.setColor(ofColor(127));
     presetsController.setFont(&categoryFont);
     presetsController.setPresetNames(&themes);
     presetsController.setAcceptImage(&largeEditImage);
     presetsController.setControllers(&controllers[0]);
-    presetsController.setTitleFont(&numberFontSmall);
+    presetsController.setTitleFont(&presetsTitleFont);
     presetsController.setPlayers(&players);
-    presetsController.setPosition(20 + (WIDTH - 20*4) / 6 - 50, HEIGHT/16 - 50, 100, 100);
+    presetsController.setPosition(buffer, buffer, width, topButtonHeight);
 
 }
