@@ -207,8 +207,11 @@ void SoundController::draw() {
     ofPushStyle();
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
         if(estimotes->getNearables()->size()) {
-            ofSetColor(255);
+            ofSetColor(127);
             ofDrawRectRounded(changeEstimote.bounds, 20);
+            ofSetColor(255);
+            string title = "CHANGE BEACON";
+            catFont->drawString(title, changeEstimote.bounds.x + changeEstimote.bounds.width/2 - catFont->getStringBoundingBox(title, 0, 0).width / 2, changeEstimote.bounds.y + changeEstimote.bounds.height/2 + catFont->getStringBoundingBox(title, 0, 0).height / 2);
         }
     }
     if(mode == modes::SETUP && width.val + 5 >= fullWidth && categoryName == "Recordings") {
@@ -226,7 +229,8 @@ void SoundController::draw() {
         }
         ofDrawRectRounded(record.bounds, 20);
         ofSetColor(255);
-        catFont->drawString("Rec", record.bounds.x + record.bounds.width/2 - catFont->getStringBoundingBox("Rec", 0, 0).width / 2, record.bounds.y + record.bounds.height/2 + catFont->getStringBoundingBox("Rec", 0, 0).height / 2);
+        string title = "REC";
+        catFont->drawString(title, record.bounds.x + record.bounds.width/2 - catFont->getStringBoundingBox(title, 0, 0).width / 2, record.bounds.y + record.bounds.height/2 + catFont->getStringBoundingBox(title, 0, 0).height / 2);
         ofPopStyle();
     }
     if(mode == INACTIVE) {

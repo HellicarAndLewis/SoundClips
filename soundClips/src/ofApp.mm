@@ -13,6 +13,7 @@ void ofApp::setup(){
     
     splashScreen.load("Default@2x~ipad.png");
     cout<<ofGetHeight()<<endl;
+    cout<<ofGetWidth()<<endl;
 
 }
 
@@ -79,12 +80,12 @@ void ofApp::draw(){
             ofSetColor(127);
             ofDrawRectRounded(muteAll.bounds, 20);
             ofSetColor(255);
-            categoryFont.drawString("Unmute", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("Unmute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("Unmute", 0, 0).height / 2);
+            categoryFont.drawString("UNMUTE", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("UNMUTE", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("UNMUTE", 0, 0).height / 2);
         } else {
             ofSetColor(127);
             ofDrawRectRounded(muteAll.bounds, 20);
             ofSetColor(255);
-            categoryFont.drawString("Mute", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("Mute", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("Mute", 0, 0).height / 2);
+            categoryFont.drawString("MUTE", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("MUTE", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("MUTE", 0, 0).height / 2);
         }
         
         for(int i = 0; i < NUM_CONTROLLERS; i++) {

@@ -20,7 +20,7 @@ void PresetsController::draw() {
     ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
     if(mode == modes::IDLE || width.val - 5 <= smallWidth) {
         ofSetColor(255);
-        font->drawString("Presets", x.val + width.val/2 - font->getStringBoundingBox("Presets", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("Presets", 0, 0).height/2);
+        font->drawString("PRESETS", x.val + width.val/2 - font->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("PRESETS", 0, 0).height/2);
         ofPopStyle();
     }
     if(mode == modes::SETUP) {
