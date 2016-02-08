@@ -38,7 +38,7 @@ public:
     
     bool settingUp, wasSettingUpLastFrame;
     
-    ofTrueTypeFont numberFontLarge, numberFontSmall, categoryFont, soundFont, presetsTitleFont;
+    ofTrueTypeFont numberFontLarge, numberFontSmall, categoryFont, soundFont, presetsTitleFont, presetsFont;
     SoundController controllers[NUM_CONTROLLERS];
     movementManager* manager;
     map<string, map<string, ofSoundPlayer*> > players;

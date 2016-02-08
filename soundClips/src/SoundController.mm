@@ -29,8 +29,8 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     
     maxRadius =  (int)(HEIGHT*0.10);
 
-    x.set(_x);//buffer * (1+1) + _width*(1));
-    y.set(_y + HEIGHT);//HEIGHT/16 + buffer * (1+1) + _width*(1));
+    x.set(_x);
+    y.set(_y + HEIGHT);
     width.set(_width);
     height.set(_height);
     x.attraction = 0.1;
@@ -208,6 +208,7 @@ void SoundController::update() {
 
 void SoundController::draw() {
     ofPushStyle();
+    ofFill();
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
         if(estimotes->getNearables()->size() && !changingEstimote) {
             ofSetColor(127);
@@ -532,7 +533,7 @@ void SoundController::drawLists() {
             ofSetColor(255, 255, 255, 51);
             ofFill();
             ofDrawRectRounded(categoryButtons[i].bounds, 20);
-            ofSetColor(255, 255, 255, 127);
+            ofSetColor(255, 255, 255, 51);
             heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - 0.04*WIDTH - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.04*WIDTH, 0.03*HEIGHT);
             ofPopStyle();
         }
@@ -547,8 +548,8 @@ void SoundController::drawLists() {
         ofSetColor(255, 255, 255, 51);
         ofFill();
         ofDrawRectRounded(categoryButtons[i].bounds, 20);
-        ofSetColor(255);
-        heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - buffer*2, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.04*WIDTH, 0.03*HEIGHT);
+        ofSetColor(255, 255, 255, 51);
+        heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - 0.04*WIDTH - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.04*WIDTH, 0.03*HEIGHT);
         ofPopStyle();
     }
     ofPushStyle();

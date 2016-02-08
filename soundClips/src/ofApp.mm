@@ -11,9 +11,7 @@ void ofApp::setup(){
     wasSettingUpLastFrame = false;
     ofSetOrientation(OF_ORIENTATION_DEFAULT);
     
-    splashScreen.load("Default@2x~ipad.png");
-    cout<<ofGetHeight()<<endl;
-    cout<<ofGetWidth()<<endl;
+    splashScreen.load("images/splashImage.png");
 
 }
 
@@ -53,7 +51,7 @@ void ofApp::update(){
 void ofApp::draw(){
     ofSetOrientation(OF_ORIENTATION_DEFAULT);
     if(!loaded) {
-        splashScreen.load("Default@2x~ipad.png");
+        splashScreen.load("images/splashImage.png");
         splashScreen.draw(0, 0, WIDTH, HEIGHT);
         splashDrawn = true;
     } else {
@@ -83,11 +81,18 @@ void ofApp::draw(){
             ofSetColor(127);
             ofDrawRectRounded(muteAll.bounds, 20);
             ofSetColor(255);
+            ofNoFill();
+            ofSetLineWidth(5);
+            ofDrawRectRounded(muteAll.bounds, 20);
             categoryFont.drawString("UNMUTE", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("UNMUTE", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("UNMUTE", 0, 0).height / 2);
         } else {
             ofSetColor(127);
             ofDrawRectRounded(muteAll.bounds, 20);
             ofSetColor(255);
+            ofSetColor(255);
+            ofNoFill();
+            ofSetLineWidth(5);
+            ofDrawRectRounded(muteAll.bounds, 20);
             categoryFont.drawString("MUTE", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("MUTE", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("MUTE", 0, 0).height / 2);
         }
         
@@ -280,18 +285,19 @@ void ofApp::load() {
     numberFontLarge.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.143);
     numberFontSmall.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.110);
     categoryFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.020);
-    soundFont.load("fonts/Geo.otf", HEIGHT*0.023);
-    presetsTitleFont.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.065);
+    presetsFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.03);
+    soundFont.load("fonts/Geo.otf", HEIGHT*0.022);
+    presetsTitleFont.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.062);
     
-    cols[0] = ofColor(126, 166, 187);
-    cols[1] = ofColor(188, 187, 22);
-    cols[2] = ofColor(255, 192, 61);
-    cols[3] = ofColor(234, 114, 0);
-    cols[4] = ofColor(104, 93, 199);
-    cols[5] = ofColor(190, 132, 203);
-    cols[6] = ofColor(188, 90, 128);
-    cols[7] = ofColor(191, 150, 91);
-    cols[8] = ofColor(203, 170, 120);
+    cols[0] = ofColor(158, 200, 215);
+    cols[1] = ofColor(140, 215, 63);
+    cols[2] = ofColor(247, 184, 70);
+    cols[3] = ofColor(240, 84, 35);
+    cols[4] = ofColor(69, 114, 184);
+    cols[5] = ofColor(208, 161, 202);
+    cols[6] = ofColor(155, 54, 148);
+    cols[7] = ofColor(228, 119, 37);
+    cols[8] = ofColor(244, 202, 146);
     
     smallEditImage.load("images/arrowSmallUp.png");
     largeEditImage.load("images/arrowLargeDown.png");
@@ -359,6 +365,7 @@ void ofApp::load() {
     
     presetsController.setColor(ofColor(127));
     presetsController.setFont(&categoryFont);
+    presetsController.setListFont(&presetsFont);
     presetsController.setPresetNames(&themes);
     presetsController.setAcceptImage(&largeEditImage);
     presetsController.setControllers(&controllers[0]);

@@ -18,10 +18,15 @@ void PresetsController::draw() {
     ofSetColor(col.r, col.g, col.b);
     ofFill();
     ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
+    ofNoFill();
+    ofSetLineWidth(5);
+    ofSetColor(255);
+    ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
+    ofPopStyle();
+    ofPushStyle();
     if(mode == modes::IDLE || width.val - 5 <= smallWidth) {
         ofSetColor(255);
         font->drawString("PRESETS", x.val + width.val/2 - font->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("PRESETS3", 0, 0).height/2);
-        ofPopStyle();
     }
     if(mode == modes::SETUP) {
         if(width.val + 5 >=fullWidth) {
@@ -71,7 +76,7 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     
     ofRectangle titleBoundingBox = titleFont->getStringBoundingBox("Presets", 0, 0);
     int PresetX = 2*buffer;
-    int PresetY = fullY + buffer*2 + font->getStringBoundingBox((*presets)[0], 0, 0).height + titleBoundingBox.height;
+    int PresetY = fullY + buffer*2 + listFont->getStringBoundingBox((*presets)[0], 0, 0).height + titleBoundingBox.height;
     int PresetButtonWidth = ( fullWidth - buffer*2 );
     int PresetButtonHeight = ( fullHeight - titleBoundingBox.height - buffer*8 ) / 9;
     
@@ -135,7 +140,7 @@ void PresetsController::drawList() {
         ofPopStyle();
         ofPushStyle();
         ofSetColor(255);
-        font->drawString(presetButtons[i].name, presetButtons[i].bounds.x + presetButtons[i].bounds.width/2 - font->getStringBoundingBox(presetButtons[i].name, 0, 0).width/2 + buffer, presetButtons[i].bounds.y + presetButtons[i].bounds.height - presetButtons[i].bounds.height/4);
+        listFont->drawString(presetButtons[i].name, presetButtons[i].bounds.x + presetButtons[i].bounds.width/2 - listFont->getStringBoundingBox(presetButtons[i].name, 0, 0).width/2 + buffer, presetButtons[i].bounds.y + presetButtons[i].bounds.height/2 + listFont->getStringBoundingBox(presetButtons[i].name, 0, 0).height/2);
         ofPopStyle();
     }
     ofPopStyle();

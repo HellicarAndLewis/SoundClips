@@ -25,6 +25,7 @@ private:
     button accept, cancel;
     int mode;
     ofTrueTypeFont* font;
+    ofTrueTypeFont* listFont;
     ofTrueTypeFont* titleFont;
     float smallX, smallY, smallHeight, smallWidth;
     float fullX, fullY, fullHeight, fullWidth;
@@ -42,6 +43,8 @@ public:
     void setPosition(float _x, float _y, float _width, float _height);
     void setColor(ofColor _col) { col = _col;};
     void setFont(ofTrueTypeFont* _font) { font = _font; };
+    void setListFont(ofTrueTypeFont* _font) { listFont = _font; };
+
     void setTitleFont(ofTrueTypeFont* _font) { titleFont = _font; };
     void setAcceptImage(ofImage* img) { acceptImg = img; };
     void setMode(int _mode) { mode = _mode;};
