@@ -18,10 +18,16 @@ SoundController::SoundController() {
     player = NULL;
     newBeacon = "";
     lastMode = IDLE;
+    radius = 0;
+    circleX = 0;
+    circleY = 0;
+    numMoving = 0;
 }
 
 void SoundController::setPosition(float _x, float _y, float _width, float _height) {
     buffer = HEIGHT*0.01;
+    
+    maxRadius =  (int)(HEIGHT*0.10);
 
     x.set(_x);//buffer * (1+1) + _width*(1));
     y.set(_y + HEIGHT);//HEIGHT/16 + buffer * (1+1) + _width*(1));
@@ -42,10 +48,8 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     fullWidth = WIDTH - buffer*2;
     fullHeight = fullWidth;
     
-    
     x.target(_x);
     y.target(_y);
-//    , upperBuffer + buffer * (2+1) + width*(23)
     
     ofRectangle numberBoundingBox = numberFont->getStringBoundingBox("0" + ofToString(number), 0, 0);
     int CategoryX = 2*buffer;
@@ -93,7 +97,6 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     
     changeEstimote.name = "changeEstimote";
     changeEstimote.bounds = ofRectangle(buffer, buffer, _width, topButtonHeight);
-    //changeEstimote.bounds = ofRectangle(20 + (WIDTH - 20*4) / 6 - smallWidth/2, HEIGHT/16 - 100, smallWidth, 200);
 }
 
 void SoundController::setPlayer(ofSoundPlayer* _input) {
@@ -206,11 +209,17 @@ void SoundController::update() {
 void SoundController::draw() {
     ofPushStyle();
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
-        if(estimotes->getNearables()->size()) {
+        if(estimotes->getNearables()->size() && !changingEstimote) {
             ofSetColor(127);
             ofDrawRectRounded(changeEstimote.bounds, 20);
             ofSetColor(255);
             string title = "CHANGE BEACON";
+            catFont->drawString(title, changeEstimote.bounds.x + changeEstimote.bounds.width/2 - catFont->getStringBoundingBox(title, 0, 0).width / 2, changeEstimote.bounds.y + changeEstimote.bounds.height/2 + catFont->getStringBoundingBox(title, 0, 0).height / 2);
+        } else if(estimotes->getNearables()->size()) {
+            ofSetColor(127);
+            ofDrawRectRounded(changeEstimote.bounds, 20);
+            ofSetColor(255);
+            string title = "CHANGE SOUND";
             catFont->drawString(title, changeEstimote.bounds.x + changeEstimote.bounds.width/2 - catFont->getStringBoundingBox(title, 0, 0).width / 2, changeEstimote.bounds.y + changeEstimote.bounds.height/2 + catFont->getStringBoundingBox(title, 0, 0).height / 2);
         }
     }
@@ -246,7 +255,10 @@ void SoundController::draw() {
         soundFont->drawString(soundName, x.val + buffer, y.val + height.val - buffer);
         ofSetColor(255);
         catFont->drawString(categoryName,  x.val + buffer, y.val + height.val - soundFont->getStringBoundingBox("d", 0, 0).getHeight() - buffer*2);
-        heirarchyArrowMain->draw(x.val + buffer + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth() + buffer, y.val + height.val - soundFont->getStringBoundingBox("d", 0, 0).getHeight() - catFont->getStringBoundingBox("d", 0, 0).getHeight() - buffer*2 + buffer/2, 0.01*WIDTH, 0.015*HEIGHT);
+        ofPushStyle();
+        ofSetRectMode(OF_RECTMODE_CENTER);
+//        heirarchyArrowMain->draw(x.val + buffer*2 + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth(), y.val + height.val - soundFont->getStringBoundingBox("D", 0, 0).getHeight() - catFont->getStringBoundingBox("D", 0, 0).getHeight() - buffer*2 + buffer/2, 0.02*WIDTH, 0.015*HEIGHT);
+        ofPopStyle();
         smallEditImage->draw(edit.bounds);
         muteImage->draw(mute.bounds);
     }
@@ -263,7 +275,10 @@ void SoundController::draw() {
     ofPopStyle();
     if(mode == modes::SETUP && width.val + 5 >= fullWidth) {
         catFont->drawString(categoryName,  x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width , y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer);
-        heirarchyArrowMain->draw(x.val + buffer*2 + numberFont->getStringBoundingBox("22", 0, 0).width + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth() + buffer, y.val + catFont->getStringBoundingBox("d", 0, 0).height + buffer - catFont->getStringBoundingBox("d", 0, 0).getHeight() + buffer/2, 0.01*WIDTH, 0.015*HEIGHT);
+        ofPushStyle();
+        ofSetRectMode(OF_RECTMODE_CENTER);
+//        heirarchyArrowMain->draw(x.val + buffer*3 + numberFont->getStringBoundingBox("22", 0, 0).width + catFont->getStringBoundingBox(categoryName, 0, 0).getWidth(), y.val + buffer + catFont->getStringBoundingBox("D", 0, 0).height/2, 0.02*WIDTH, 0.015*HEIGHT);
+        ofPopStyle();
         ofSetColor(0);
         soundFont->drawString(soundName, x.val + 2*buffer + numberFont->getStringBoundingBox("22", 0, 0).width, y.val + catFont->getStringBoundingBox("d", 0, 0).height + soundFont->getStringBoundingBox("d", 0, 0).height + buffer + buffer);
         ofSetColor(255);
@@ -274,6 +289,7 @@ void SoundController::draw() {
             largeEditImage->draw(edit.bounds);
         } else {
             drawEstimoteSetup();
+            largeEditImage->draw(edit.bounds);
         }
     }
     if(mode == INACTIVE) {
@@ -380,16 +396,45 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
             }
         }
         if(!keyboard->isKeyboardShowing()) {
-            if (changeEstimote.isInside(touch.x, touch.y)) {
+            if(edit.isInside(touch.x, touch.y)) {
+                x.target(smallX);
+                y.target(smallY);
+                width.target(smallWidth);
+                height.target(smallHeight);
+                changingEstimote = false;
+                edit.bounds = ofRectangle(smallX + smallWidth - WIDTH*0.041 - buffer, smallY + buffer, HEIGHT*0.03, HEIGHT*0.03);
+                if(categoryName == "Recordings") {
+                    playingRecording = true;
+                    for(int i = 0; i < allRecorders->size(); i++) {
+                        if((*allRecorders)[i]->getIndex() == soundIndex) {
+                            setRecorder((*allRecorders)[i]);
+                            break;
+                        }
+                    }
+                } else {
+                    playingRecording = false;
+                    stop();
+                    for(auto it = (*allPlayers)[categoryName].begin(); it != (*allPlayers)[categoryName].end(); it++) {
+                        if(it->first == soundName) {
+                            player = it->second;
+                        }
+                    }
+                }
+            }
+            if (changeEstimote.isInside(touch.x, touch.y) && estimotes->getNearables()->size()) {
                 if(!changingEstimote) {
                     changingEstimote = true;
                     newBeacon = "";
                 } else {
                     changingEstimote = false;
                     if(newBeacon != "") {
-                        beaconName= newBeacon;
                         newBeacon = "";
                     }
+                }
+            }
+            if(changingEstimote && ofDist(touch.x, touch.y, circleX, circleY + maxRadius + buffer) < maxRadius) {
+                if(numMoving == 1) {
+                    beaconName = newBeacon;
                 }
             }
         }
@@ -487,11 +532,14 @@ void SoundController::drawLists() {
             ofSetColor(255, 255, 255, 51);
             ofFill();
             ofDrawRectRounded(categoryButtons[i].bounds, 20);
-            ofSetColor(255);
-            heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - buffer*2, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.016*WIDTH, 0.02*HEIGHT*1.5);
+            ofSetColor(255, 255, 255, 127);
+            heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - 0.04*WIDTH - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.04*WIDTH, 0.03*HEIGHT);
             ofPopStyle();
         }
-        catFont->drawString(it->first, categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
+        ofPushStyle();
+        ofSetColor(255);
+        catFont->drawString(it->first, categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 + catFont->getStringBoundingBox(it->first, 0, 0).height/2);
+        ofPopStyle();
         i++;
     }
     if(categoryName == "Recordings") {
@@ -500,10 +548,13 @@ void SoundController::drawLists() {
         ofFill();
         ofDrawRectRounded(categoryButtons[i].bounds, 20);
         ofSetColor(255);
-        heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - heirarchyArrowList->getWidth() - buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.016*WIDTH, 0.02*HEIGHT*1.5);
+        heirarchyArrowList->draw(categoryButtons[i].bounds.x + categoryButtons[i].bounds.width - buffer*2, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 - 0.02*HEIGHT*1.5/2, 0.04*WIDTH, 0.03*HEIGHT);
         ofPopStyle();
     }
+    ofPushStyle();
+    ofSetColor(255);
     catFont->drawString("Recordings", categoryButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height - categoryButtons[i].bounds.height/4);
+    ofPopStyle();
     if(categoryName != "Recordings") {
         i = 0;
         for(auto it = (*allPlayers)[categoryName].begin(); it != (*allPlayers)[categoryName].end(); it++) {
@@ -514,7 +565,7 @@ void SoundController::drawLists() {
                 ofDrawRectRounded(soundButtons[i].bounds, 20);
                 ofPopStyle();
             }
-            soundFont->drawString(it->first, soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
+            soundFont->drawString(it->first, soundButtons[i].bounds.x + buffer, categoryButtons[i].bounds.y + categoryButtons[i].bounds.height/2 + soundFont->getStringBoundingBox(it->first, 0, 0).height/2);
             i++;
         }
     } else {
@@ -530,7 +581,6 @@ void SoundController::drawLists() {
         }
     }
     for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
-//        ofDrawRectangle(categoryButtons[i].bounds);
         ofPushStyle();
         if(soundButtons[i].active) {
             ofSetColor(255, 0, 0);
@@ -539,8 +589,6 @@ void SoundController::drawLists() {
             ofSetColor(255);
             soundFont->drawString("Recording...", soundButtons[i].bounds.x + buffer, soundButtons[i].bounds.y + soundButtons[i].bounds.height - soundButtons[i].bounds.height/4);
         }
-//        ofDrawRectangle(soundButtons[i].bounds);
-
         ofPopStyle();
     }
     ofPopStyle();
@@ -548,18 +596,21 @@ void SoundController::drawLists() {
 
 void SoundController::drawEstimoteSetup() {
     ofPushStyle();
-    ofSetColor(0);
+    
+    ofSetColor(255);
     int x, y;
-    x = fullX + fullWidth/2;
+    x = fullX + buffer;
     y = fullY + buffer*8 + numberFont->getStringBoundingBox("22", 0, 0).height;
-    string message = "Setting Up A New Beacon...";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    string message = "Connected Beacon Name: " + beaconName;
     
-    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "Current Beacon: " + beaconName;
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    ofPushStyle();
+    ofSetColor(127, 127);
+    ofDrawRectangle(x - buffer, fullY + buffer*7 + numberFont->getStringBoundingBox("22", 0, 0).height - catFont->getStringBoundingBox(message + "y", 0, 0).height, fullWidth, catFont->getStringBoundingBox(message + "y", 0, 0).height*5 + buffer*7);
+    ofPopStyle();
+
+    catFont->drawString(message, x, y);
     
-    int numMoving = 0;
+    numMoving = 0;
     map<string, bool>* movers = estimotes->getNearables();
     for(auto it = movers->begin(); it != movers->end(); it++) {
         if(it->second) {
@@ -567,50 +618,76 @@ void SoundController::drawEstimoteSetup() {
             numMoving++;
         }
     }
-    if(numMoving > 1) {
-        y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-        message = "More than One Beacon Moving!";
-        newBeacon = "";
-        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
-    } else {
-        y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-        message = "New Beacon: " + newBeacon;
-        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
-    }
-    y += buffer*4;
+    
+    y += buffer*2;
     y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "To setup a new beacon:";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    message = "To connect a new beacon follow these steps:";
+    catFont->drawString(message, x, y);
     
     y+=buffer*2;
     y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "Make sure all nearby beacons are still.";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
-    
-    y+= buffer*2;
-    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "Move the Beacon you would like";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    message = "1. Make sure all nearby beacons are still.";
+    catFont->drawString(message, x, y);
     
     y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "to connect to this controller.";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    message = "2. Move the beacon you would like to connect to this controller.";
+    catFont->drawString(message, x, y);
     
-    y+= buffer*2;
-    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "Once your new beacons name is displayed";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    ofSetCircleResolution(50);
     
-    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "press the button in the";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    x = fullX + fullWidth/2;
     
-    y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
-    message = "top left corner again to save it.";
-    catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    y += buffer*4;
+    
+    circleX = x;
+    circleY = y;
+    if(numMoving == 0) {
+        ofNoFill();
+        ofSetLineWidth(5);
+        radius++;
+        radius %= maxRadius;
+        for(int i = 0; i < 10; i++) {
+            ofSetColor(0, 0, 0, 0 + ofMap((radius + i * (int)(maxRadius) / 10)%(int)(maxRadius), 0, maxRadius, 255, 0));
+            ofDrawCircle(x, y + maxRadius + buffer, (radius + i * (int)(maxRadius) / 10)%(int)(maxRadius));
+        }
+        
+        ofSetColor(0);
+        y += maxRadius*2 + buffer*6;
+        message = "Searching For Moving Beacons...";
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    } else if(numMoving == 1) {
+        radius = maxRadius;
+        ofFill();
+        ofSetColor(0, 255, 0);
+        ofDrawCircle(x, y + maxRadius + buffer, radius);
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        ofSetColor(255);
+        tick->draw(x, y + maxRadius + buffer, WIDTH*0.26, HEIGHT*0.19);
+        y += maxRadius*2 + buffer*4;
+        message = "New Beacon Found!";
+        ofSetColor(0);
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+        y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+        message = "Tap the green button to connect it to this controller.";
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    } else if(numMoving > 1) {
+        radius = maxRadius;
+        ofFill();
+        ofSetColor(255, 0, 0);
+        ofDrawCircle(x, y + maxRadius + buffer, radius);
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        ofSetColor(255);
+        tooManyMovingImg->draw(x, y + maxRadius + buffer, WIDTH*0.26, HEIGHT*0.19);
+        y += maxRadius*2 + buffer*4;
+        message = "Multiple Beacons Moving!";
+        ofSetColor(0);
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+        y += catFont->getStringBoundingBox(message, 0, 0).height + buffer;
+        message = "Only move the beacon you wish to connect to this controller.";
+        catFont->drawString(message, x - catFont->getStringBoundingBox(message, 0, 0).width/2, y);
+    }
+    
     ofPopStyle();
-    
-
 }
 
 void SoundController::setFromXml(ofxXmlSettings* settings) {

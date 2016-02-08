@@ -20,20 +20,18 @@ void PresetsController::draw() {
     ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
     if(mode == modes::IDLE || width.val - 5 <= smallWidth) {
         ofSetColor(255);
-        font->drawString("PRESETS", x.val + width.val/2 - font->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("PRESETS", 0, 0).height/2);
+        font->drawString("PRESETS", x.val + width.val/2 - font->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("PRESETS3", 0, 0).height/2);
         ofPopStyle();
     }
     if(mode == modes::SETUP) {
         if(width.val + 5 >=fullWidth) {
             ofSetColor(255);
-            titleFont->drawString("PRESETS", x.val + buffer, y.val + titleFont->getStringBoundingBox("PRESETS", 0, 0).height + 10);
+            titleFont->drawString("PRESETS", x.val + width.val/2 - titleFont->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + buffer + titleFont->getStringBoundingBox("PRESETS", 0, 0).height + 10);
             ofSetColor(255);
             ofDrawRectangle(x.val + buffer, y.val + 3 * buffer + titleFont->getStringBoundingBox("0", 0, 0).getHeight(), width.val - buffer*2, 3);
             drawList();
             ofSetColor(255);
             acceptImg->draw(accept.bounds);
-            ofSetColor(255, 0, 0);
-            acceptImg->draw(cancel.bounds);
         }
     }
     ofPopStyle();
@@ -73,9 +71,9 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     
     ofRectangle titleBoundingBox = titleFont->getStringBoundingBox("Presets", 0, 0);
     int PresetX = 2*buffer;
-    int PresetY = fullY + buffer + font->getStringBoundingBox((*presets)[0], 0, 0).height + titleBoundingBox.height;
-    int PresetButtonWidth = ( fullWidth - buffer*2 ) / 2;
-    int PresetButtonHeight = ( fullHeight - titleBoundingBox.height - buffer*4 ) / 9;
+    int PresetY = fullY + buffer*2 + font->getStringBoundingBox((*presets)[0], 0, 0).height + titleBoundingBox.height;
+    int PresetButtonWidth = ( fullWidth - buffer*2 );
+    int PresetButtonHeight = ( fullHeight - titleBoundingBox.height - buffer*8 ) / 9;
     
     for(int i = 0; i < NUM_PRESETS; i++) {
         presetButtons[i].name = (*presets)[i];
@@ -85,11 +83,7 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     presetButtons[NUM_PRESETS-1].name = "Recordings";
     
     accept.name = "Accept";
-    accept.bounds = ofRectangle(fullX + fullWidth - acceptImg->getWidth() - buffer, fullY + buffer, acceptImg->getWidth(), acceptImg->getHeight());
-    
-    cancel.name = "Cancel";
-    cancel.bounds = accept.bounds;
-    cancel.bounds.x -= buffer + accept.bounds.width;
+    accept.bounds = ofRectangle(fullX + fullWidth - HEIGHT*0.06 - buffer, fullY + buffer, HEIGHT*0.06, HEIGHT*0.06);
 }
 
 void PresetsController::onTouch(ofTouchEventArgs & touch) {
@@ -104,21 +98,17 @@ void PresetsController::onTouch(ofTouchEventArgs & touch) {
     } else if( mode == modes::SETUP) {
         if(accept.isInside(touch.x, touch.y)) {
             alertViewDelegate = [[[AlertViewDelegate alloc] init] retain];
-            UIAlertView * alert = [[[UIAlertView alloc] initWithTitle:@"Are you Sure you wish to Continue?"
-                                                              message:@"Changing the preset will change all the sounds for all the sound controllers"
+            UIAlertView * alert = [[[UIAlertView alloc] initWithTitle:@"Are you sure you wish to Continue?"
+                                                              message:@"Changing the preset will change all the sounds for all the sound controllers.\nCancel to return to the main menu without changes."
                                                              delegate:alertViewDelegate
                                                     cancelButtonTitle:@"Cancel"
                                                     otherButtonTitles:nil] retain];
             [alert addButtonWithTitle:ofxStringToNSString("Continue")];
-            
             [alert show];
             [alert release];
         } else if (cancel.isInside(touch.x, touch.y) ){
             //do cancel code here
-            x.target(smallX);
-            y.target(smallY);
-            width.target(smallWidth);
-            height.target(smallHeight);
+
         } else {
             for(int i = 0; i < NUM_PRESETS; i++) {
                 if(presetButtons[i].isInside(touch.x, touch.y)) {
@@ -145,7 +135,7 @@ void PresetsController::drawList() {
         ofPopStyle();
         ofPushStyle();
         ofSetColor(255);
-        font->drawString(presetButtons[i].name, presetButtons[i].bounds.x + buffer, presetButtons[i].bounds.y + presetButtons[i].bounds.height - presetButtons[i].bounds.height/4);
+        font->drawString(presetButtons[i].name, presetButtons[i].bounds.x + presetButtons[i].bounds.width/2 - font->getStringBoundingBox(presetButtons[i].name, 0, 0).width/2 + buffer, presetButtons[i].bounds.y + presetButtons[i].bounds.height - presetButtons[i].bounds.height/4);
         ofPopStyle();
     }
     ofPopStyle();
@@ -184,5 +174,12 @@ void PresetsController::onAccept() {
             it++;
         }
     }  
+}
+
+void PresetsController::onCancel() {
+    x.target(smallX);
+    y.target(smallY);
+    width.target(smallWidth);
+    height.target(smallHeight);
 }
 

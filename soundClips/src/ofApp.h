@@ -45,7 +45,7 @@ public:
     vector<string> themes;
     int themeNum;
     vector<soundRecording*> recorders;
-    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList, splashScreen, background, crossImage, muteImage;
+    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList, splashScreen, background, crossImage, muteImage, tick, tooManyMoving;
     ofxiOSKeyboard* keyboard;
         
     PresetsController presetsController;

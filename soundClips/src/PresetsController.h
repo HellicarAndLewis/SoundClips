@@ -49,6 +49,7 @@ public:
     void setPlayers(map<string, map<string, ofSoundPlayer*> >* _players) {allPlayers = _players;};
     
     void onAccept();
+    void onCancel();
 
     void onTouch(ofTouchEventArgs & touch);
     void draw();

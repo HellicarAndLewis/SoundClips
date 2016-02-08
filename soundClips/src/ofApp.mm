@@ -74,7 +74,10 @@ void ofApp::draw(){
             }
             beaconsLastFrame = *list;
         }
-        presetsController.draw();
+        if(!settingUp || presetsController.getMode() == PresetsController::modes::SETUP) {
+            presetsController.draw();
+
+        }
         ofPushStyle();
         if(allMuted) {
             ofSetColor(127);
@@ -197,6 +200,7 @@ void ofApp::audioIn( float * input, int bufferSize, int nChannels ) {
 
 //--------------------------------------------------------------
 void ofApp::popupDismissed() {
+    presetsController.onCancel();
 }
 
 //--------------------------------------------------------------
@@ -275,9 +279,9 @@ void ofApp::load() {
     
     numberFontLarge.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.143);
     numberFontSmall.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.110);
-    categoryFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.023);
-    soundFont.load("fonts/Geo.otf", HEIGHT*0.020);
-    presetsTitleFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.110);
+    categoryFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.020);
+    soundFont.load("fonts/Geo.otf", HEIGHT*0.023);
+    presetsTitleFont.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.065);
     
     cols[0] = ofColor(126, 166, 187);
     cols[1] = ofColor(188, 187, 22);
@@ -289,13 +293,15 @@ void ofApp::load() {
     cols[7] = ofColor(191, 150, 91);
     cols[8] = ofColor(203, 170, 120);
     
-    smallEditImage.load("images/arrowDown.png");
-    largeEditImage.load("images/arrowUp.png");
-    heirarchyArrowMain.load("images/Heirachy_Arrow_Small.png");
+    smallEditImage.load("images/arrowSmallUp.png");
+    largeEditImage.load("images/arrowLargeDown.png");
+    heirarchyArrowMain.load("images/Selector_Arrow.png");
     heirarchyArrowList.load("images/Selector_Arrow.png");
     background.load("images/background.png");
-    crossImage.load("images/cross.png");
-    muteImage.load("images/cross2.png");
+    crossImage.load("images/muteCross.png");
+    muteImage.load("images/buttonCross.png");
+    tick.load("images/tick.png");
+    tooManyMoving.load("images/tooManyMovingCross.png");
     
     keyboard = new ofxiOSKeyboard(0,0,0,0);
     keyboard->setMaxChars(11);
@@ -339,6 +345,8 @@ void ofApp::load() {
             controllers[i].setInactiveImage(&crossImage);
             controllers[i].setSettingUpVariable(&settingUp);
             controllers[i].setMuteImage(&muteImage);
+            controllers[i].setTickImage(&tick);
+            controllers[i].setTooManyMovingImage(&tooManyMoving);
             controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + height*(y%3), width, height);
         }
     }

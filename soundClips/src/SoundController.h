@@ -54,6 +54,10 @@ private:
     map<string, map<string, ofSoundPlayer*> >* allPlayers;
     vector<soundRecording*>* allRecorders;
     int number;
+    int radius;
+    int numMoving;
+    int maxRadius;
+    float circleX, circleY;
     ofTrueTypeFont* numberFontLarge;
     ofTrueTypeFont* numberFont;
     ofTrueTypeFont* catFont;
@@ -78,6 +82,8 @@ private:
     
     bool* allMuted;
     bool* settingUp;
+    
+    ofImage* tick, *tooManyMovingImg;
     
     ofColor col;
     int mode, lastMode;
@@ -120,6 +126,9 @@ public:
     void setSoundName(string _sound) {soundName = _sound;};
     void setMovementManager(movementManager* _manager) {estimotes = _manager;};
     void setSettingUpVariable(bool* _settingUp) {settingUp = _settingUp;};
+    void setTickImage(ofImage* _tick) {tick = _tick;};
+    void setTooManyMovingImage(ofImage* _img) {tooManyMovingImg = _img;};
+
     
     void setCol(ofColor _col) {col = _col;};
     void setMode(int _mode) {mode = _mode;};
