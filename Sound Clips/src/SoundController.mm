@@ -254,6 +254,7 @@ void SoundController::draw() {
         ofSetColor(255, 0, 0);
         if(currentlyRecording) {
             ofSetColor(0);
+            ofFill();
             ofDrawRectRounded(record.bounds, 20);
             ofSetColor(255, 0, 0);
             ofSetLineWidth(10);
