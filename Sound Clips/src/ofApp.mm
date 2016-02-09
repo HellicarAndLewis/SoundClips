@@ -316,8 +316,8 @@ void ofApp::load() {
     cols[4] = ofColor(69, 114, 184);
     cols[5] = ofColor(208, 161, 202);
     cols[6] = ofColor(155, 54, 148);
-    cols[7] = ofColor(228, 119, 37);
-    cols[8] = ofColor(244, 202, 146);
+    cols[7] = ofColor(244, 202, 146);
+    cols[8] = ofColor(228, 119, 37);
     
     smallEditImage.load("images/arrowSmallUp.png");
     largeEditImage.load("images/arrowLargeDown.png");

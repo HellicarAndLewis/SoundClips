@@ -233,12 +233,18 @@ void SoundController::draw() {
             ofSetColor(127);
             ofDrawRectRounded(changeEstimote.bounds, 20);
             ofSetColor(255);
+            ofSetLineWidth(5);
+            ofNoFill();
+            ofDrawRectRounded(changeEstimote.bounds, 20);
             string title = "CHANGE BEACON";
             catFont->drawString(title, changeEstimote.bounds.x + changeEstimote.bounds.width/2 - catFont->getStringBoundingBox(title, 0, 0).width / 2, changeEstimote.bounds.y + changeEstimote.bounds.height/2 + catFont->getStringBoundingBox(title, 0, 0).height / 2);
         } else if(estimotes->getNearables()->size()) {
             ofSetColor(127);
             ofDrawRectRounded(changeEstimote.bounds, 20);
             ofSetColor(255);
+            ofSetLineWidth(5);
+            ofNoFill();
+            ofDrawRectRounded(changeEstimote.bounds, 20);
             string title = "CHANGE SOUND";
             catFont->drawString(title, changeEstimote.bounds.x + changeEstimote.bounds.width/2 - catFont->getStringBoundingBox(title, 0, 0).width / 2, changeEstimote.bounds.y + changeEstimote.bounds.height/2 + catFont->getStringBoundingBox(title, 0, 0).height / 2);
         }
@@ -625,6 +631,7 @@ void SoundController::drawEstimoteSetup() {
     
     ofPushStyle();
     ofSetColor(127, 127);
+    ofFill();
     ofDrawRectangle(x - buffer, fullY + buffer*7 + numberFont->getStringBoundingBox("22", 0, 0).height - catFont->getStringBoundingBox(message + "y", 0, 0).height, fullWidth, catFont->getStringBoundingBox(message + "y", 0, 0).height*5 + buffer*7);
     ofPopStyle();
 
