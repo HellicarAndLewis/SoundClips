@@ -38,25 +38,32 @@ private:
     map<string, map<string, ofSoundPlayer*> >* allPlayers;
     
 public:
-    PresetsController() { presets = NULL; mode = modes::IDLE; };
+    //Constructor
+    PresetsController() {
+        presets = NULL;
+        mode = modes::IDLE;
+    };
+    
+    //Setters
     void setPresetNames(vector<string>* _names) {presets = _names;};
     void setPosition(float _x, float _y, float _width, float _height, float _screenWidth, float _screenHeight);
     void setColor(ofColor _col) { col = _col;};
     void setFont(ofTrueTypeFont* _font) { font = _font; };
     void setListFont(ofTrueTypeFont* _font) { listFont = _font; };
-
     void setTitleFont(ofTrueTypeFont* _font) { titleFont = _font; };
     void setAcceptImage(ofImage* img) { acceptImg = img; };
     void setMode(int _mode) { mode = _mode;};
     void setControllers(SoundController* _controllers) {controllers = _controllers;};
     void setPlayers(map<string, map<string, ofSoundPlayer*> >* _players) {allPlayers = _players;};
     
+    //Getters
+    int getMode() { return mode; };
+    
+    //Functionality
     void onAccept();
     void onCancel();
-
     void onTouch(ofTouchEventArgs & touch);
     void draw();
-    int getMode() { return mode; };
     void update();
     void drawList();
     void onTouchMoved(ofTouchEventArgs & touch);

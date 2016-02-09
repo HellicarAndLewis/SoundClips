@@ -6,20 +6,33 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    //setup some initial booleans for control
     loaded = false;
     splashDrawn = false;
     wasSettingUpLastFrame = false;
+    settingUp = false;
     
+    //Load the splash screen image
     splashScreen.load("images/splashImage.png");
+    
+    //Save the screen width and screen height to be used for orientation changes (no longer useful but left in for convenience)
     screenWidth = ofGetWidth();
     screenHeight = ofGetHeight();
     
+    //Set the orientation to default
     ofSetOrientation(OF_ORIENTATION_DEFAULT);
+    
+    //set some graphics settings
+    ofEnableAntiAliasing();
+    ofSetCircleResolution(50);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    //Check if everything has been loaded
     if(loaded) {
+        
+        //Check if any of the sound controllers are in setup mode abd update all of them
         settingUp = false;
         for(int i = 0; i < NUM_CONTROLLERS; i++) {
             controllers[i].update();
@@ -27,84 +40,117 @@ void ofApp::update(){
                 settingUp = true;
             }
         }
+        
+        //Also check if the preset controller is in setup mode and update it
+        presetsController.update();
         if(presetsController.getMode() == PresetsController::modes::SETUP) {
             settingUp = true;
         }
+
+        //Check if any of the controllers are in setup mode
         if(settingUp) {
+            
+            //Go through all the controllers and set them to inactive if another is in setup mode
             for(int i = 0; i < NUM_CONTROLLERS; i++) {
                 if(controllers[i].getMode() != SoundController::modes::SETUP) controllers[i].setMode(SoundController::modes::INACTIVE);
             }
+            
+            //Do the same with the preset controller
             if(presetsController.getMode() != PresetsController::modes::SETUP) presetsController.setMode(PresetsController::modes::INACTIVE);
+            
+        //Check if we are were setting up in the last frame but are no longer setting up
         } else if(wasSettingUpLastFrame) {
+            
+            //Go through the controllers and set them from inactive to idle
             for(int i = 0; i < NUM_CONTROLLERS; i++) {
                 if(controllers[i].getMode() == SoundController::modes::INACTIVE) controllers[i].setMode(SoundController::modes::IDLE);
             }
+            
+            //Do the same with the preset controller
             if(presetsController.getMode() == PresetsController::modes::INACTIVE) presetsController.setMode(PresetsController::modes::IDLE);
         }
-        presetsController.update();
-    } else if(splashDrawn) {
-        load();
-        loaded = true;
-    }
-    wasSettingUpLastFrame = settingUp;
-}
-
-//--------------------------------------------------------------
-void ofApp::draw(){
-    if(!loaded) {
-        splashScreen.load("images/splashImage.png");
-        splashScreen.draw(0, 0, screenWidth, screenHeight);
-        splashDrawn = true;
-    } else {
-        background.draw(0, 0, screenWidth, screenHeight);
-        ofEnableSmoothing();
-        if(!allMuted) {
-            map<string, bool>* list = manager->getNearables();
-            for(auto nearable = list->begin(); nearable != list->end(); nearable++) {
+        
+        //Here we'll look to see if any of our beacons are moving
+        //Get the list of nearables and whether or not they are moving
+        map<string, bool>* list = manager->getNearables();
+        //Iterate over the list and check if any of the beacons have turned on since last frame
+        for(auto nearable = list->begin(); nearable != list->end(); nearable++) {
+            //Is the beacon currently on?
+            bool beaconCurrentlyOn = nearable->second;
+            //Was the beacon on last frame?
+            bool beaconOnLastFrame = beaconsLastFrame[nearable->first];
+            //Check if the beacon has "turned on" ie it was off last frame and is now on
+            if(beaconCurrentlyOn && !beaconOnLastFrame) {
+                //If a beacon has changed then go through the controllers and find the controller connected to that beacon
                 for(int i = 0; i < NUM_CONTROLLERS; i++) {
-                    bool beaconCurrentlyOn = nearable->second;
-                    bool beaconOnLastFrame = beaconsLastFrame[nearable->first];
-                    if(controllers[i].getBeaconName() == nearable->first && beaconCurrentlyOn && !beaconOnLastFrame) {
+                    //Check if the controller is connected to that beacon
+                    if(controllers[i].getBeaconName() == nearable->first){
+                        //Check if the controller is in IDLE mode
                         if(controllers[i].getMode() == SoundController::modes::IDLE) {
+                            //If it is in idle mode then play the sound!
                             controllers[i].play();
                         }
                     }
                 }
             }
-            beaconsLastFrame = *list;
         }
+        //Save the beacons list so we can compare it next time and look for any changes.
+        beaconsLastFrame = *list;
+    //If we havn't loaded everything then we gotta pass on to the draw() function to draw our splash screen then when we come back here we load everthing with the load() function and set loaded to true!
+    } else if(splashDrawn) {
+        load();
+        loaded = true;
+    }
+    //Save whether or not we are setting up this frame
+    wasSettingUpLastFrame = settingUp;
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+    //Check if we've loaded everything
+    if(!loaded) {
+        //If we have loaded everything then draw the splash image and tell the update() function that we drew our splash image so it will load everything next frame
+        splashScreen.draw(0, 0, screenWidth, screenHeight);
+        splashDrawn = true;
+    //If we have loaded everything then we'll do our drawing!
+    } else {
+        //Start by drawing our background Image
+        background.draw(0, 0, screenWidth, screenHeight);
+        //Enable smoothing and anti-aliasing
+        ofEnableSmoothing();
+        ofEnableAntiAliasing();
+        //Check if we aren't setting up a controller. This is the only time we want to draw the presets controller UNLESS the preset controller is in setup mode causing "setting up" to be true
         if(!settingUp || presetsController.getMode() == PresetsController::modes::SETUP) {
             presetsController.draw();
-
         }
+        
         ofPushStyle();
+        //Here we draw the mute button
+        //Draw the background
+        ofSetColor(127);
+        ofDrawRectRounded(muteAll.bounds, 20);
+        ofSetColor(255);
+        ofNoFill();
+        ofSetLineWidth(5);
+        ofDrawRectRounded(muteAll.bounds, 20);
+        //Check if allMuted is set to true and change the text displayed in the mute button
         if(allMuted) {
-            ofSetColor(127);
-            ofDrawRectRounded(muteAll.bounds, 20);
-            ofSetColor(255);
-            ofNoFill();
-            ofSetLineWidth(5);
-            ofDrawRectRounded(muteAll.bounds, 20);
             categoryFont.drawString("UNMUTE", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("UNMUTE", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("UNMUTE", 0, 0).height / 2);
         } else {
-            ofSetColor(127);
-            ofDrawRectRounded(muteAll.bounds, 20);
-            ofSetColor(255);
-            ofSetColor(255);
-            ofNoFill();
-            ofSetLineWidth(5);
-            ofDrawRectRounded(muteAll.bounds, 20);
             categoryFont.drawString("MUTE", muteAll.bounds.x + muteAll.bounds.width/2 - categoryFont.getStringBoundingBox("MUTE", 0, 0).width / 2, muteAll.bounds.y + muteAll.bounds.height/2 + categoryFont.getStringBoundingBox("MUTE", 0, 0).height / 2);
         }
         
+        //Go through all the controllers and draw them if they aren't in setup mode
         for(int i = 0; i < NUM_CONTROLLERS; i++) {
             if(controllers[i].getMode() != SoundController::modes::SETUP) controllers[i].draw();
         }
+        //If one of our controllers is in setup mode draw it last so it's ontop of the other ones
         if(settingUp) {
             for(int i = 0; i < NUM_CONTROLLERS; i++) {
                 if(controllers[i].getMode() == SoundController::modes::SETUP) controllers[i].draw();
             }
         }
+        //Draw the presets controller last if it's in setup mode
         if(presetsController.getMode() == PresetsController::modes::SETUP) {
             presetsController.draw();
         }
@@ -119,9 +165,11 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::touchDown(ofTouchEventArgs & touch){
+    //Go through all the controllers and call their onTouch methods with the current touch
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].onTouch(touch);
     }
+    //Check if the mute button is pressed and control the mute button
     if(muteAll.isInside(touch.x, touch.y) && !settingUp) {
         if(!allMuted) {
             allMuted = true;
@@ -143,11 +191,13 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
             allMuted = false;
         }
     }
+    //Pass the touch to the presets controller
     presetsController.onTouch(touch);
 }
 
 //--------------------------------------------------------------
 void ofApp::touchMoved(ofTouchEventArgs & touch){
+    //PAss the touch to the onTouchMoved methods of the presetsController and the soundControllers
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].onTouchMoved(touch);
     }
@@ -156,6 +206,7 @@ void ofApp::touchMoved(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void ofApp::touchUp(ofTouchEventArgs & touch){
+    //Pass the touch to the controllers touchUp method
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].onTouchUp(touch);
     }
@@ -173,9 +224,12 @@ void ofApp::touchCancelled(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void ofApp::lostFocus(){
+    //Save the settings to the Documents Directory when the app is closed
+    //Save the settings for each controller
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         controllers[i].saveToXml(&settings);
     }
+    //Save the names of the recorders
     for(int i = 0; i < recorders.size(); i++) {
         recorderNames.setValue("NAME", recorders[i]->getName(), i);
     }
@@ -194,30 +248,12 @@ void ofApp::gotMemoryWarning(){
 
 //--------------------------------------------------------------
 void ofApp::deviceOrientationChanged(int newOrientation){
-//    cout<<"width: "<<ofGetWidth()<<endl;
-//    cout<<"height: "<<ofGetHeight()<<endl;
-    
-//    int temp = screenWidth;
-//    screenWidth = screenHeight;
-//    screenHeight = temp;
-//    //It looks like when this is called ofGetWidth and ofGetHeight are still the same as in the previous orientation
-//    int buffer = screenWidth*0.01;
-//    int upperBuffer = screenHeight / 8;
-//    float width = (screenWidth - buffer*4) / 3;
-//    float height = (screenHeight - buffer*4 - upperBuffer*2) / 3;
-//    float topButtonHeight = 0.1 * screenHeight;
-//    for(int y = 0; y < NUM_CONTROLLERS/3; y++) {
-//        for(int x = 0; x < NUM_CONTROLLERS/3; x++) {
-//            int i = x + (int)(3*y);
-//            controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + height*(y%3), width, height, screenWidth, screenHeight);
-//        }
-//    }
-//    presetsController.setPosition(buffer, buffer, width, topButtonHeight, screenWidth, screenHeight);
-//    muteAll.bounds = ofRectangle(buffer*2 + width, buffer, width, topButtonHeight);
+
 }
 
 //--------------------------------------------------------------
 void ofApp::audioIn( float * input, int bufferSize, int nChannels ) {
+    //Pass the audio-in to the recorders
     for(int i = 0; i < recorders.size(); i++) {
         recorders[i]->audioReceived(input, bufferSize, nChannels);
     }
@@ -225,28 +261,25 @@ void ofApp::audioIn( float * input, int bufferSize, int nChannels ) {
 
 //--------------------------------------------------------------
 void ofApp::popupDismissed() {
+    //When the cancel confirm popup is dismissed call the presetscontroller onCancel method
     presetsController.onCancel();
 }
 
 //--------------------------------------------------------------
 void ofApp::popupAccepted() {
+    //When the cancel confirm popup is accepted call the presetscontroller onAccept method
     presetsController.onAccept();
 }
 
 void ofApp::load() {
-    ofSetOrientation(OF_ORIENTATION_DEFAULT);
-    
-    ofBackground(0);
+    //Load all of the initial settings
     
     //Setup the movement Manager
     manager = new movementManager();
     manager->setup();
     
-    //Set the variable to tell if any controllers are in setup mode
-    settingUp = false;
-    
+    //Load from the settings files. Try to load them from the Documents directory but if they have not been saved there load them from the data folder with default initial values.
     string message = "";
-    
     if( settings.loadFile(ofxiOSGetDocumentsDirectory() + "settings.xml") ){
         message = "settings.xml loaded from documents folder!";
     }else if( settings.loadFile("settings/settings.xml") ){
@@ -256,13 +289,12 @@ void ofApp::load() {
     }
     cout<<message<<endl;
     
-    message = "";
     if( recorderNames.loadFile(ofxiOSGetDocumentsDirectory() + "recorderNames.xml") ){
         message = "recorderNames.xml loaded from documents folder!";
     }else if( recorderNames.loadFile("settings/recorderNames.xml") ){
         message = "recorderNames.xml.xml loaded from data folder!";
     }else{
-        message = "unable to load recorderNames.xml.xml check data/ folder";
+        message = "unable to load recorderNames.xml check data/ folder";
     }
     cout<<message<<endl;
     
@@ -295,13 +327,13 @@ void ofApp::load() {
     }
     themes.push_back("Recordings");
     
+    //open the sound stream
     ofSoundStreamSetup(0, 1);
-    //stream.setup(0, 1, 44100, 512, 4);
     
+    //Set the audio session category to "Playback" so we can connect to bluetooth audio
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil];
-
-    themeNum = 0;
     
+    //Load allt he fonts
     numberFontLarge.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.143);
     numberFontSmall.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.110);
     categoryFont.load("fonts/Geo_Oblique.otf", HEIGHT*0.020);
@@ -309,6 +341,8 @@ void ofApp::load() {
     soundFont.load("fonts/Geo.otf", HEIGHT*0.022);
     presetsTitleFont.load("fonts/ITCAvantGardePro-Demi.otf", HEIGHT*0.062);
     
+    //Initialize all the colors
+    ofColor cols[NUM_CONTROLLERS];
     cols[0] = ofColor(158, 200, 215);
     cols[1] = ofColor(140, 215, 63);
     cols[2] = ofColor(247, 184, 70);
@@ -319,6 +353,7 @@ void ofApp::load() {
     cols[7] = ofColor(244, 202, 146);
     cols[8] = ofColor(228, 119, 37);
     
+    //Load all the images
     smallEditImage.load("images/arrowSmallUp.png");
     largeEditImage.load("images/arrowLargeDown.png");
     heirarchyArrowMain.load("images/Selector_Arrow.png");
@@ -329,12 +364,14 @@ void ofApp::load() {
     tick.load("images/tick.png");
     tooManyMoving.load("images/tooManyMovingCross.png");
     
+    //Initialize the keyboard
     keyboard = new ofxiOSKeyboard(0,0,0,0);
     keyboard->setMaxChars(9);
     keyboard->setBgColor(0, 0, 0, 0);
     keyboard->setFontColor(0,0,0, 0);
     keyboard->setFontSize(0);
     
+    //Load the recorders and their names
     recorderNames.pushTag("RECORDERS");
     for(int i = 0; i < NUM_CONTROLLERS; i++) {
         soundRecording* recorder = new soundRecording();
@@ -345,6 +382,7 @@ void ofApp::load() {
         recorders.push_back(recorder);
     }
     
+    //Setup all the controllers
     int buffer = screenHeight*0.01;
     int upperBuffer = screenHeight / 8;
     float width = (screenWidth - buffer*4) / 3;
@@ -377,12 +415,13 @@ void ofApp::load() {
         }
     }
         
-    //mute All button
+    //setup mute all button
     muteAll.name = "Mute";
     float topButtonHeight = 0.1 * HEIGHT;
     muteAll.bounds = ofRectangle(buffer*2 + width, buffer, width, topButtonHeight);
     allMuted = false;
     
+    //Setup the presets controller
     presetsController.setColor(ofColor(127));
     presetsController.setFont(&categoryFont);
     presetsController.setListFont(&presetsFont);

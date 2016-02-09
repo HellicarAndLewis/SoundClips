@@ -10,10 +10,14 @@
 #import "MyViewController.h"
 #import "AlertViewDelegate.h"
 
+//Start delegate and view controller with nil values
 MyViewController * viewController = nil;
 AlertViewDelegate * alertViewDelegate = nil;
 
+//Draw the controller
 void PresetsController::draw() {
+    
+    //Draw the background
     ofPushStyle();
     ofSetColor(col.r, col.g, col.b);
     ofFill();
@@ -23,19 +27,26 @@ void PresetsController::draw() {
     ofSetColor(255);
     ofDrawRectRounded(x.val, y.val, width.val, height.val, 20);
     ofPopStyle();
+    
     ofPushStyle();
+    //Check the mode
     if(mode == modes::IDLE || width.val - 5 <= smallWidth) {
         ofSetColor(255);
+        //Draw the presets string if it's IDLE
         font->drawString("PRESETS", x.val + width.val/2 - font->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + height.val / 2 + font->getStringBoundingBox("PRESETS3", 0, 0).height/2);
     }
     if(mode == modes::SETUP) {
+        //If we're setting up check if we're full sized
         if(width.val + 5 >=fullWidth) {
+            //If we're full sized write the title header and draw the list of themes
             ofSetColor(255);
             titleFont->drawString("PRESETS", x.val + width.val/2 - titleFont->getStringBoundingBox("PRESETS", 0, 0).width/2, y.val + buffer + titleFont->getStringBoundingBox("PRESETS", 0, 0).height + 10);
             ofSetColor(255);
             ofDrawRectangle(x.val + buffer, y.val + 3 * buffer + titleFont->getStringBoundingBox("0", 0, 0).getHeight(), width.val - buffer*2, 3);
+            //Draw the list of themes
             drawList();
             ofSetColor(255);
+            //Draw the accept image
             acceptImg->draw(accept.bounds);
         }
     }
@@ -43,40 +54,50 @@ void PresetsController::draw() {
 }
 
 void PresetsController::update() {
+    //Update the integrators
     x.update();
     y.update();
     width.update();
     height.update();
+    //If we're setting up and we're getting smaller, then set the mode to IDLE
     if(mode == modes::SETUP && width.val - 5 <= smallWidth) {
         mode = modes::IDLE;
     }
 }
 
+//Set the initial position of the controller
 void PresetsController::setPosition(float _x, float _y, float _width, float _height, float _screenWidth, float _screenHeight) {
+    //Pass the x, y width and height values to the integrators
     x.set(_x);
     y.set(_y);
     width.set(_width);
     height.set(_height);
     
+    //Set the attraction of the integrators to a magic number 0.1
     x.attraction = 0.1;
     y.attraction = 0.1;
     width.attraction = 0.1;
     height.attraction = 0.1;
     
+    //Save the initial x, y, width and height so we can go back to them later
     smallX = _x;
     smallY = _y;
     smallWidth = _width;
     smallHeight = _height;
     
+    //Initialize the size of the buffer
     buffer = _screenHeight*0.01;
     
+    //initilaize the size of the buffer at the top of the whole screen
     int upperBuffer = _screenHeight / 8;
     
+    //save the full expanded size of the presets controller which we use when it's in setup mode
     fullX = buffer;
     fullY = _screenHeight / 8 + buffer;
     fullWidth = _screenWidth - buffer*2;
     fullHeight = _screenHeight - upperBuffer*2;
     
+    //Target the correct size and position based on the mode, mode check could be used for changing the orientation but we don't use it for that currently
     if(mode == modes::SETUP) {
         x.target(fullX);
         y.target(fullY);
@@ -89,6 +110,7 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
         height.target(smallHeight);
     }
     
+    //Setup the list buttons
     ofRectangle titleBoundingBox = titleFont->getStringBoundingBox("Presets", 0, 0);
     int PresetX = 2*buffer;
     int PresetY = fullY + buffer*2 + listFont->getStringBoundingBox((*presets)[0], 0, 0).height + titleBoundingBox.height;
@@ -102,47 +124,53 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     }
     presetButtons[NUM_PRESETS-1].name = "Recordings";
     
+    //Setup the "Accept" button
     accept.name = "Accept";
     accept.bounds = ofRectangle(fullX + fullWidth - _screenHeight*0.06 - buffer, fullY + buffer, _screenHeight*0.06, _screenHeight*0.06);
 }
 
 void PresetsController::onTouch(ofTouchEventArgs & touch) {
-    if(mode == modes::IDLE) {
-        if(isInside(touch.x, touch.y, x.val, y.val, width.val, height.val)) {
+    //Check if the touch is even inside the controller
+    if(isInside(touch.x, touch.y, x.val, y.val, width.val, height.val)) {
+        //If the mode is idle change the mode to setup and target the full position and size
+        if(mode == modes::IDLE) {
             mode = modes::SETUP;
             x.target(fullX);
             y.target(fullY);
             width.target(fullWidth);
             height.target(fullHeight);
-        }
-    } else if( mode == modes::SETUP) {
-        if(accept.isInside(touch.x, touch.y)) {
-            alertViewDelegate = [[[AlertViewDelegate alloc] init] retain];
-            UIAlertView * alert = [[[UIAlertView alloc] initWithTitle:@"Are you sure you wish to Continue?"
-                                                              message:@"Changing the preset will change all the sounds for all the sound controllers.\nCancel to return to the main menu without changes."
-                                                             delegate:alertViewDelegate
-                                                    cancelButtonTitle:@"Cancel"
-                                                    otherButtonTitles:nil] retain];
-            [alert addButtonWithTitle:ofxStringToNSString("Continue")];
-            [alert show];
-            [alert release];
-        } else if (cancel.isInside(touch.x, touch.y) ){
-            //do cancel code here
-
-        } else {
-            for(int i = 0; i < NUM_PRESETS; i++) {
-                if(presetButtons[i].isInside(touch.x, touch.y)) {
-                    presetNum = i;
+        // if the mode is setup then check other stuff
+        } else if( mode == modes::SETUP) {
+            //Check if we're pressing the accept button
+            if(accept.isInside(touch.x, touch.y)) {
+                //Pop up a warning window, cancel to return to idle mode accept to return to idle mode but also change all of the controllers to the preset selection that you chose.
+                alertViewDelegate = [[[AlertViewDelegate alloc] init] retain];
+                UIAlertView * alert = [[[UIAlertView alloc] initWithTitle:@"Are you sure you wish to Continue?"
+                                                                  message:@"Changing the preset will change all the sounds for all the sound controllers.\nCancel to return to the main menu without changes."
+                                                                 delegate:alertViewDelegate
+                                                        cancelButtonTitle:@"Cancel"
+                                                        otherButtonTitles:nil] retain];
+                [alert addButtonWithTitle:ofxStringToNSString("Continue")];
+                [alert show];
+                [alert release];
+            }else {
+                //Iterate over the preset buttons and check if we're touching it. If so set the preset number to the one we're touching
+                for(int i = 0; i < NUM_PRESETS; i++) {
+                    if(presetButtons[i].isInside(touch.x, touch.y)) {
+                        presetNum = i;
+                    }
                 }
             }
         }
     }
 }
 
+//isInside method to check if something is inside something else (amazing)
 bool PresetsController::isInside(int _x, int _y, float boundsX, float boundsY, float width, float height) {
    return (_x > boundsX && _x < (boundsX + width)) && (_y > boundsY && _y < (boundsY + height));
 }
 
+//Draw the list text
 void PresetsController::drawList() {
     ofPushStyle();
     for(int i = 0; i < NUM_PRESETS; i++) {
@@ -172,7 +200,6 @@ void PresetsController::onTouchMoved(ofTouchEventArgs & touch) {
 }
 
 void PresetsController::onAccept() {
-    mode = modes::IDLE;
     x.target(smallX);
     y.target(smallY);
     width.target(smallWidth);

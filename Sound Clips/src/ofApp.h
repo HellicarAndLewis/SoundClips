@@ -36,38 +36,54 @@ public:
     
     void audioIn( float * input, int bufferSize, int nChannels );
     
-    bool settingUp, wasSettingUpLastFrame;
+    bool    settingUp,
+            wasSettingUpLastFrame;
     
-    int screenWidth;
-    int screenHeight;
+    int screenWidth,
+        screenHeight;
     
-    ofTrueTypeFont numberFontLarge, numberFontSmall, categoryFont, soundFont, presetsTitleFont, presetsFont;
+    ofTrueTypeFont  numberFontLarge,
+                    numberFontSmall,
+                    categoryFont,
+                    soundFont,
+                    presetsTitleFont,
+                    presetsFont;
+    
     SoundController controllers[NUM_CONTROLLERS];
+    
     movementManager* manager;
+    
     map<string, map<string, ofSoundPlayer*> > players;
+    
     vector<string> themes;
-    int themeNum;
+    
     vector<soundRecording*> recorders;
-    ofImage smallEditImage, largeEditImage, heirarchyArrowMain, heirarchyArrowList, splashScreen, background, crossImage, muteImage, tick, tooManyMoving;
+    
+    ofImage smallEditImage,
+            largeEditImage,
+            heirarchyArrowMain,
+            heirarchyArrowList,
+            splashScreen,
+            background,
+            crossImage,
+            muteImage,
+            tick,
+            tooManyMoving;
+    
     ofxiOSKeyboard* keyboard;
         
     PresetsController presetsController;
-    
-    ofSoundStream stream;
-        
-    UILongPressGestureRecognizer* lpgr;
-    
+                
     map<string, bool> beaconsLastFrame;
     
-    bool loaded, splashDrawn;
-        
-    bool allMuted;
+    bool    loaded,
+            splashDrawn;
     
-    button muteAll;
+    bool    allMuted;
     
-    ofxXmlSettings settings, recorderNames;
+    button  muteAll;
     
-    ofColor cols[NUM_CONTROLLERS];
+    ofxXmlSettings  settings,
+                    recorderNames;
+    
 };
-
-
