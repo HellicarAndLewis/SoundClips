@@ -38,6 +38,9 @@ public:
     
     bool settingUp, wasSettingUpLastFrame;
     
+    int screenWidth;
+    int screenHeight;
+    
     ofTrueTypeFont numberFontLarge, numberFontSmall, categoryFont, soundFont, presetsTitleFont, presetsFont;
     SoundController controllers[NUM_CONTROLLERS];
     movementManager* manager;

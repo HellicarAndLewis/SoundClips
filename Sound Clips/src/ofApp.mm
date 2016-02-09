@@ -9,10 +9,12 @@ void ofApp::setup(){
     loaded = false;
     splashDrawn = false;
     wasSettingUpLastFrame = false;
-    ofSetOrientation(OF_ORIENTATION_DEFAULT);
     
     splashScreen.load("images/splashImage.png");
-
+    screenWidth = ofGetWidth();
+    screenHeight = ofGetHeight();
+    
+    ofSetOrientation(OF_ORIENTATION_DEFAULT);
 }
 
 //--------------------------------------------------------------
@@ -49,13 +51,12 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofSetOrientation(OF_ORIENTATION_DEFAULT);
     if(!loaded) {
         splashScreen.load("images/splashImage.png");
-        splashScreen.draw(0, 0, WIDTH, HEIGHT);
+        splashScreen.draw(0, 0, screenWidth, screenHeight);
         splashDrawn = true;
     } else {
-        background.draw(0, 0, WIDTH, HEIGHT);
+        background.draw(0, 0, screenWidth, screenHeight);
         ofEnableSmoothing();
         if(!allMuted) {
             map<string, bool>* list = manager->getNearables();
@@ -193,7 +194,26 @@ void ofApp::gotMemoryWarning(){
 
 //--------------------------------------------------------------
 void ofApp::deviceOrientationChanged(int newOrientation){
+//    cout<<"width: "<<ofGetWidth()<<endl;
+//    cout<<"height: "<<ofGetHeight()<<endl;
     
+//    int temp = screenWidth;
+//    screenWidth = screenHeight;
+//    screenHeight = temp;
+//    //It looks like when this is called ofGetWidth and ofGetHeight are still the same as in the previous orientation
+//    int buffer = screenWidth*0.01;
+//    int upperBuffer = screenHeight / 8;
+//    float width = (screenWidth - buffer*4) / 3;
+//    float height = (screenHeight - buffer*4 - upperBuffer*2) / 3;
+//    float topButtonHeight = 0.1 * screenHeight;
+//    for(int y = 0; y < NUM_CONTROLLERS/3; y++) {
+//        for(int x = 0; x < NUM_CONTROLLERS/3; x++) {
+//            int i = x + (int)(3*y);
+//            controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + height*(y%3), width, height, screenWidth, screenHeight);
+//        }
+//    }
+//    presetsController.setPosition(buffer, buffer, width, topButtonHeight, screenWidth, screenHeight);
+//    muteAll.bounds = ofRectangle(buffer*2 + width, buffer, width, topButtonHeight);
 }
 
 //--------------------------------------------------------------
@@ -310,7 +330,7 @@ void ofApp::load() {
     tooManyMoving.load("images/tooManyMovingCross.png");
     
     keyboard = new ofxiOSKeyboard(0,0,0,0);
-    keyboard->setMaxChars(11);
+    keyboard->setMaxChars(9);
     keyboard->setBgColor(0, 0, 0, 0);
     keyboard->setFontColor(0,0,0, 0);
     keyboard->setFontSize(0);
@@ -325,9 +345,9 @@ void ofApp::load() {
         recorders.push_back(recorder);
     }
     
-    int buffer = HEIGHT*0.01;
-    int upperBuffer = HEIGHT / 8;
-    float width = (WIDTH - buffer*4) / 3;
+    int buffer = screenHeight*0.01;
+    int upperBuffer = screenHeight / 8;
+    float width = (screenWidth - buffer*4) / 3;
     float height = width;
     for(int y = 0; y < NUM_CONTROLLERS/3; y++) {
         for(int x = 0; x < NUM_CONTROLLERS/3; x++) {
@@ -353,7 +373,7 @@ void ofApp::load() {
             controllers[i].setMuteImage(&muteImage);
             controllers[i].setTickImage(&tick);
             controllers[i].setTooManyMovingImage(&tooManyMoving);
-            controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + height*(y%3), width, height);
+            controllers[i].setPosition(buffer * (x%3+1) + width*(x%3), upperBuffer + buffer * (y%3+1) + height*(y%3), width, height, screenWidth, screenHeight);
         }
     }
         
@@ -371,6 +391,6 @@ void ofApp::load() {
     presetsController.setControllers(&controllers[0]);
     presetsController.setTitleFont(&presetsTitleFont);
     presetsController.setPlayers(&players);
-    presetsController.setPosition(buffer, buffer, width, topButtonHeight);
+    presetsController.setPosition(buffer, buffer, width, topButtonHeight, screenWidth, screenHeight);
 
 }

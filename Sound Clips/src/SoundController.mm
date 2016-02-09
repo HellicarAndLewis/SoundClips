@@ -24,13 +24,13 @@ SoundController::SoundController() {
     numMoving = 0;
 }
 
-void SoundController::setPosition(float _x, float _y, float _width, float _height) {
-    buffer = HEIGHT*0.01;
+void SoundController::setPosition(float _x, float _y, float _width, float _height, float _screenWidth, float _screenHeight) {
+    buffer = _screenHeight*0.01;
     
-    maxRadius =  (int)(HEIGHT*0.10);
+    maxRadius =  (int)(_screenHeight*0.10);
 
     x.set(_x);
-    y.set(_y + HEIGHT);
+    y.set(_y + _screenHeight);
     width.set(_width);
     height.set(_height);
     x.attraction = 0.1;
@@ -44,12 +44,23 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
     smallHeight = _height;
         
     fullX = buffer;
-    fullY = HEIGHT / 8 + buffer;
-    fullWidth = WIDTH - buffer*2;
-    fullHeight = fullWidth;
+    fullY = _screenHeight / 8 + buffer;
+    fullWidth = _screenWidth - buffer*2;
+    int upperBuffer = _screenHeight / 8;
+    fullHeight = (_screenHeight - upperBuffer*2 - buffer*2);
     
-    x.target(_x);
-    y.target(_y);
+    if(mode == modes::SETUP) {
+        x.target(fullX);
+        y.target(fullY);
+        width.target(fullWidth);
+        height.target(fullHeight);
+    } else {
+        x.target(smallX);
+        y.target(smallY);
+        width.target(smallWidth);
+        height.target(smallHeight);
+    }
+
     
     ofRectangle numberBoundingBox = numberFont->getStringBoundingBox("0" + ofToString(number), 0, 0);
     int CategoryX = 2*buffer;
@@ -83,14 +94,14 @@ void SoundController::setPosition(float _x, float _y, float _width, float _heigh
         soundButtons[i].name = soundNames[i];
     }
     
-    float topButtonHeight = HEIGHT*0.1;
+    float topButtonHeight = _screenHeight*0.1;
     
     edit.name = "Edit";
-    edit.bounds = ofRectangle(smallX + smallWidth - HEIGHT*0.03 - buffer, smallY + buffer, HEIGHT*0.03, HEIGHT*0.03);
-    edit.savedBounds = ofRectangle(fullX + fullWidth - HEIGHT*0.06 - buffer, fullY + buffer, HEIGHT*0.06, HEIGHT*0.06);
+    edit.bounds = ofRectangle(smallX + smallWidth - _screenHeight*0.03 - buffer, smallY + buffer, _screenHeight*0.03, _screenHeight*0.03);
+    edit.savedBounds = ofRectangle(fullX + fullWidth - _screenHeight*0.06 - buffer, fullY + buffer, _screenHeight*0.06, _screenHeight*0.06);
     
     mute.name = "Mute";
-    mute.bounds = ofRectangle(smallX + smallWidth - HEIGHT*0.03 - buffer, smallY + smallHeight - HEIGHT*0.03 - buffer, HEIGHT*0.03, HEIGHT*0.03);
+    mute.bounds = ofRectangle(smallX + smallWidth - _screenHeight*0.03 - buffer, smallY + smallHeight - _screenHeight*0.03 - buffer, _screenHeight*0.03, _screenHeight*0.03);
     
     record.name = "Record";
     record.bounds = ofRectangle( buffer*3 + _width*2, buffer, _width, topButtonHeight);
@@ -175,10 +186,18 @@ void SoundController::update() {
         }
     }
     if(mode == modes::SETUP && width.val - 5 <= smallWidth) {
-        if(player->isPlaying()) {
-            mode = modes::PLAYING;
+        if(!(categoryName == "Recordings")) {
+            if(player->isPlaying()) {
+                mode = modes::PLAYING;
+            } else {
+                mode = modes::IDLE;
+            }
         } else {
-            mode = modes::IDLE;
+            if(recorder->isPlaying()) {
+                mode = modes::PLAYING;
+            } else {
+                mode = modes::IDLE;
+            }
         }
     }
     if(keyboard->isKeyboardShowing() && mode == modes::SETUP) {

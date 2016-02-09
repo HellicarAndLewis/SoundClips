@@ -52,11 +52,12 @@ void PresetsController::update() {
     }
 }
 
-void PresetsController::setPosition(float _x, float _y, float _width, float _height) {
+void PresetsController::setPosition(float _x, float _y, float _width, float _height, float _screenWidth, float _screenHeight) {
     x.set(_x);
     y.set(_y);
     width.set(_width);
     height.set(_height);
+    
     x.attraction = 0.1;
     y.attraction = 0.1;
     width.attraction = 0.1;
@@ -67,12 +68,26 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     smallWidth = _width;
     smallHeight = _height;
     
-    buffer = HEIGHT*0.01;
+    buffer = _screenHeight*0.01;
+    
+    int upperBuffer = _screenHeight / 8;
     
     fullX = buffer;
-    fullY = HEIGHT / 8 + buffer;
-    fullWidth = WIDTH - buffer*2;
-    fullHeight = fullWidth;
+    fullY = _screenHeight / 8 + buffer;
+    fullWidth = _screenWidth - buffer*2;
+    fullHeight = _screenHeight - upperBuffer*2;
+    
+    if(mode == modes::SETUP) {
+        x.target(fullX);
+        y.target(fullY);
+        width.target(fullWidth);
+        height.target(fullHeight);
+    } else {
+        x.target(smallX);
+        y.target(smallY);
+        width.target(smallWidth);
+        height.target(smallHeight);
+    }
     
     ofRectangle titleBoundingBox = titleFont->getStringBoundingBox("Presets", 0, 0);
     int PresetX = 2*buffer;
@@ -88,7 +103,7 @@ void PresetsController::setPosition(float _x, float _y, float _width, float _hei
     presetButtons[NUM_PRESETS-1].name = "Recordings";
     
     accept.name = "Accept";
-    accept.bounds = ofRectangle(fullX + fullWidth - HEIGHT*0.06 - buffer, fullY + buffer, HEIGHT*0.06, HEIGHT*0.06);
+    accept.bounds = ofRectangle(fullX + fullWidth - _screenHeight*0.06 - buffer, fullY + buffer, _screenHeight*0.06, _screenHeight*0.06);
 }
 
 void PresetsController::onTouch(ofTouchEventArgs & touch) {

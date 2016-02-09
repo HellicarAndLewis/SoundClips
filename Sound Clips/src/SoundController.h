@@ -144,7 +144,7 @@ public:
     vector<soundRecording*>* getRecorders() { return allRecorders;};
     
     //functionality
-    void setPosition(float _x, float _y, float _width, float _height);
+    void setPosition(float _x, float _y, float _width, float _height, float _fullWidth, float fullHeight);
     void onTouch(ofTouchEventArgs & touch);
     void onTouchUp(ofTouchEventArgs & touch);
     void onTouchMoved(ofTouchEventArgs & touch);

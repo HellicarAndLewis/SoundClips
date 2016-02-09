@@ -40,7 +40,7 @@ private:
 public:
     PresetsController() { presets = NULL; mode = modes::IDLE; };
     void setPresetNames(vector<string>* _names) {presets = _names;};
-    void setPosition(float _x, float _y, float _width, float _height);
+    void setPosition(float _x, float _y, float _width, float _height, float _screenWidth, float _screenHeight);
     void setColor(ofColor _col) { col = _col;};
     void setFont(ofTrueTypeFont* _font) { font = _font; };
     void setListFont(ofTrueTypeFont* _font) { listFont = _font; };
