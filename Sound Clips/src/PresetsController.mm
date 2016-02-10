@@ -173,9 +173,11 @@ bool PresetsController::isInside(int _x, int _y, float boundsX, float boundsY, f
 //Draw the list text
 void PresetsController::drawList() {
     ofPushStyle();
+    //Loop through the preset buttons to get positions. Draw text alwasy and draw greyed out rectangle if it's selected
     for(int i = 0; i < NUM_PRESETS; i++) {
         ofPushStyle();
         ofFill();
+        //If selected draw rectangle
         if(presetNum == i) {
             ofSetColor(255, 255, 255, 51);
             ofDrawRectRounded(presetButtons[i].bounds, 20);
@@ -189,6 +191,7 @@ void PresetsController::drawList() {
     ofPopStyle();
 }
 
+//This just allows the user to scroll the cursor by sliding his/her finger instead of taping every time
 void PresetsController::onTouchMoved(ofTouchEventArgs & touch) {
     if( mode == modes::SETUP) {
         for(int i = 0; i < NUM_PRESETS; i++) {
@@ -199,31 +202,39 @@ void PresetsController::onTouchMoved(ofTouchEventArgs & touch) {
     }
 }
 
+//This handles setting all the sound controllers to the chosen preset theme (only called after accepting the popup)
 void PresetsController::onAccept() {
+    //First we target our small size to return to the main page
     x.target(smallX);
     y.target(smallY);
     width.target(smallWidth);
     height.target(smallHeight);
+    //Check if we selected the recording category, if so we'll need to set recorders instead of players
     if((*presets)[presetNum] == "Recordings") {
         string category = (*presets)[presetNum];
-        vector<soundRecording*>*  recorders = controllers[0].getRecorders();
+        vector<soundRecording*>*  recorders = controllers[0].getRecorders(); //We can get the recorder list through the pointer saved in controllers[0] because all controllers have the same pointer to recorders and players
+        //Loop throuh the sound controllers and set the recording of each one and set it to "playing recording"
         for(int i = 0; i < 9; i++) {
             controllers[i].setRecorder((*recorders)[i]);
             controllers[i].setIsPlayingRecording(true);
         }
     } else {
+        //If it's not recordings we'll do the same with the players
         string category = (*presets)[presetNum];
         map<string, ofSoundPlayer*> categoryPlayers = (*allPlayers)[category];
         auto it = categoryPlayers.begin();
         for(int i = 0; i < 9; i++) {
             ofSoundPlayer* player = it->second;
             controllers[i].setPlayer(player);
+            controllers[i].setIsPlayingRecording(false);
             it++;
         }
     }  
 }
 
+//This handles what we do if we cancel the popup window
 void PresetsController::onCancel() {
+    //Go back to Idle mode and main page without changing nahy of the sounds attached to the controllers
     x.target(smallX);
     y.target(smallY);
     width.target(smallWidth);

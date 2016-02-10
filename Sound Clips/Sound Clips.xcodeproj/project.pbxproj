@@ -358,8 +358,8 @@
 				1A6689F31C6A01F400210B38 /* SoundController.mm */,
 				1A6689F41C6A01F400210B38 /* soundRecording.h */,
 				1A6689F51C6A01F400210B38 /* soundRecording.mm */,
-				1A6689F61C6A01F400210B38 /* UI */,
 				1A6689FD1C6A01F400210B38 /* WavFile.h */,
+				1A6689F61C6A01F400210B38 /* UI */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
