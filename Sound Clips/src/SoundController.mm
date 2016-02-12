@@ -393,45 +393,47 @@ void SoundController::onTouch(ofTouchEventArgs & touch) {
     //If we're setting up then we have different controls
     } else if(mode == modes::SETUP) {
         //Check if the keyboard is showing, if the keyboard is showing we only want to interact with the keyboard
-        if(!keyboard->isKeyboardShowing() && !changingEstimote) {
-            //Go through the category buttons and check if we've touched inside any of them, if we have we want to set the sound to the first sound and the category to that category that we touched
-            //Also go through the sound buttons to check if we're in those, and if so just set the cound controller
-            for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
-                if(categoryButtons[i].isInside(touch.x, touch.y)) {
-                    categoryName = categoryButtons[i].name;
-                    if(categoryName != "Recordings") {
-                        i = 0;
-                        soundName = (*allPlayers)[categoryName].begin()->first;
-                        for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
-                            soundButtons[i].name = soundIt->first;
-                            i++;
+        if(!keyboard->isKeyboardShowing()) {
+            if(!changingEstimote) {
+                //Go through the category buttons and check if we've touched inside any of them, if we have we want to set the sound to the first sound and the category to that category that we touched
+                //Also go through the sound buttons to check if we're in those, and if so just set the cound controller
+                for(int i = 0; i < NUM_CATEGORY_BUTTONS; i++) {
+                    if(categoryButtons[i].isInside(touch.x, touch.y)) {
+                        categoryName = categoryButtons[i].name;
+                        if(categoryName != "Recordings") {
+                            i = 0;
+                            soundName = (*allPlayers)[categoryName].begin()->first;
+                            for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
+                                soundButtons[i].name = soundIt->first;
+                                i++;
+                            }
+                        } else {
+                            int i = 0;
+                            soundName = (*allRecorders)[0]->getName();
+                            soundIndex = (*allRecorders)[0]->getIndex();
+                            for(; i < allRecorders->size(); i++) {
+                                soundButtons[i].name = (*allRecorders)[i]->getName();
+                            }
+                            for(; i < NUM_SOUND_BUTTONS; i++) {
+                                soundButtons[i].name = "";
+                            }
+                            
                         }
-                    } else {
-                        int i = 0;
-                        soundName = (*allRecorders)[0]->getName();
-                        soundIndex = (*allRecorders)[0]->getIndex();
-                        for(; i < allRecorders->size(); i++) {
-                            soundButtons[i].name = (*allRecorders)[i]->getName();
+                    } else if(soundButtons[i].isInside(touch.x, touch.y)) {
+                        if(categoryName != "Recordings") {
+                            int j = 0;
+                            for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
+                                soundButtons[j].name = soundIt->first;
+                                j++;
+                            }
+                        } else {
+                            for(int j = 0; j < allRecorders->size(); j++) {
+                                soundButtons[j].name = (*allRecorders)[i]->getName();
+                            }
                         }
-                        for(; i < NUM_SOUND_BUTTONS; i++) {
-                            soundButtons[i].name = "";
-                        }
-                        
+                        soundName = soundButtons[i].name;
+                        soundIndex = soundButtons[i].index;
                     }
-                } else if(soundButtons[i].isInside(touch.x, touch.y)) {
-                    if(categoryName != "Recordings") {
-                        int j = 0;
-                        for(auto soundIt = (*allPlayers)[categoryName].begin(); soundIt != (*allPlayers)[categoryName].end(); soundIt++) {
-                            soundButtons[j].name = soundIt->first;
-                            j++;
-                        }
-                    } else {
-                        for(int j = 0; j < allRecorders->size(); j++) {
-                            soundButtons[j].name = (*allRecorders)[i]->getName();
-                        }
-                    }
-                    soundName = soundButtons[i].name;
-                    soundIndex = soundButtons[i].index;
                 }
             }
             //If we pressed on the edit button then save the current settings and return to idel mode
