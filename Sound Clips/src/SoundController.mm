@@ -23,6 +23,7 @@ SoundController::SoundController() {
     circleX = 0;
     circleY = 0;
     numMoving = 0;
+    timeLastPlayed = ofGetElapsedTimef();
 }
 
 //This is like a big meaty-ass function that MUST be called after setting everything else because it uses a lot of stuff that is set by the setters. It should have a check on this but it doesn't because I'm lazy and bad at programming. Again not planning on useing this class again so it's all gewd... I think...
@@ -199,6 +200,7 @@ void SoundController::update() {
     height.update();
     //Check if we were playing but we've now stopped
     if(mode == modes::PLAYING) {
+        timeLastPlayed = ofGetElapsedTimef();
         if(categoryName == "Recordings") {
             if(!recorder->isPlaying()) {
                 mode = modes::IDLE;

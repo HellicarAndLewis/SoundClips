@@ -65,6 +65,8 @@ private:
     int maxRadius; // This is the maximum radius for estimote setting
     float circleX, circleY; // this is the position of the pulsing circle
     
+    float timeLastPlayed;
+    
     //Fonts for drawing
     ofTrueTypeFont* numberFontLarge;
     ofTrueTypeFont* numberFont;
@@ -152,6 +154,7 @@ public:
     int getMode() {return mode;};
     map<string, map<string, ofSoundPlayer*> >* getPlayers() { return allPlayers;};
     vector<soundRecording*>* getRecorders() { return allRecorders;};
+    float getTimeLastPlayed() { return timeLastPlayed; };
     
     //functionality
     void setPosition(float _x, float _y, float _width, float _height, float _fullWidth, float fullHeight); // I know this looks like a setter but it's a bit more than that as it sets a whole bunch of crap

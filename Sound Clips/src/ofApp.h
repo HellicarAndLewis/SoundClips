@@ -74,7 +74,7 @@ public:
         
     PresetsController presetsController;
                 
-    map<string, bool> beaconsLastFrame;
+    map<string, int> beaconsTurnedOnTime;
     
     bool    loaded,
             splashDrawn;

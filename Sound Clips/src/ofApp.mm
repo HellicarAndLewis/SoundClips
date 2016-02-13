@@ -5,7 +5,6 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
     //setup some initial booleans for control
     loaded = false;
     splashDrawn = false;
@@ -77,25 +76,29 @@ void ofApp::update(){
         for(auto nearable = list->begin(); nearable != list->end(); nearable++) {
             //Is the beacon currently on?
             bool beaconCurrentlyOn = nearable->second;
-            //Was the beacon on last frame?
-            bool beaconOnLastFrame = beaconsLastFrame[nearable->first];
             //Check if the beacon has "turned on" ie it was off last frame and is now on
-            if(beaconCurrentlyOn && !beaconOnLastFrame) {
+            if(beaconCurrentlyOn) {
                 //If a beacon has changed then go through the controllers and find the controller connected to that beacon
                 for(int i = 0; i < NUM_CONTROLLERS; i++) {
                     //Check if the controller is connected to that beacon
                     if(controllers[i].getBeaconName() == nearable->first){
-                        //Check if the controller is in IDLE mode
-                        if(controllers[i].getMode() == SoundController::modes::IDLE) {
-                            //If it is in idle mode then play the sound!
-                            controllers[i].play();
+                        int timeLastPlayed = controllers[i].getTimeLastPlayed();
+                        int currentTime = ofGetElapsedTimef();
+                        if(currentTime - timeLastPlayed > 2.0) {
+                            //Check if the controller is in IDLE mode
+                            if(controllers[i].getMode() == SoundController::modes::IDLE) {
+                                //If it is in idle mode then play the sound!
+                                controllers[i].play();
+                                beaconsTurnedOnTime[nearable->first] = ofGetElapsedTimef();
+                            }
+
                         }
                     }
                 }
             }
         }
         //Save the beacons list so we can compare it next time and look for any changes.
-        beaconsLastFrame = *list;
+        //beaconsLastFrame = *list;
     //If we havn't loaded everything then we gotta pass on to the draw() function to draw our splash screen then when we come back here we load everthing with the load() function and set loaded to true!
     } else if(splashDrawn) {
         load();
