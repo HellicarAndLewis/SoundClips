@@ -181,7 +181,9 @@ void ofApp::touchDown(ofTouchEventArgs & touch){
             }
             for(auto it = players.begin(); it != players.end(); it++) {
                 for(auto soundIt = it->second.begin(); soundIt != it->second.end(); soundIt++) {
-                    soundIt->second->stop();
+                    if(soundIt->second != NULL) {
+                        soundIt->second->stop();
+                    }
                 }
             }
             for(int i = 0; i < recorders.size(); i++) {
